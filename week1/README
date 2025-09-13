@@ -1,0 +1,15 @@
+For week 1's assignment, we port over Chen Zhongyu's implementation of De Novo Genome assembly without reference using De Bruijn graphs from Python 3.x, to Codon.
+
+The following is the link to Chen Zhongyu's implementation as hosted on github: https://github.com/zhongyuchen/genome-assembly
+
+Background:
+
+De Novo Genome Assembly is when short nucleotide reads are combined with on another to form a genome without a reference genome. 
+
+This implementation uses a De-Bruijn graph: a  directed graph, where vertices are made up of equal length k-mers of nucleotide reads, edges are drawn between k-mer nodes that overlap by k-1 characters (the last k-1 characters in the first k-mer of an edge are equal to the first k-1 characters in the second k-mer of an edge )
+
+
+Definitions:
+k-mer: A string of length k, in this case the k-mers are substrings of reads
+read: A representation of a sampled sequence of nucleotides
+Contig: Collection of overlapping DNA segnments or fragments that are put together to form a continuous sequence of DNA (this is representative of a single defined region of a genome)
