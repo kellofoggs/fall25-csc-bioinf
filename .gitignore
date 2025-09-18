@@ -1,0 +1,14 @@
+# existing content (if any)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+!*.py
+!*.yaml
+!*.yml
+!*.codon
+!*.txt
+!README
+!README.*
+!*.md
