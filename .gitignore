@@ -11,3 +11,8 @@
 !README.*
 !*.zip
 !*.tar
+
+# Allow week[number] directories and their contents
+!week*/
+!week*/**
+!utilities/
