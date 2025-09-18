@@ -1,4 +1,4 @@
-from utilities.dna import DNAStringTools
+from dna import DNAStringTools
 
 class DeBruijnNode[E]:
     # A Node that holds a k-mer and other fields useful for building a DeBruijn Graph
