@@ -1,4 +1,4 @@
-from .input_file_tools import Fasta, GenericTextFile
+from .file_tools import Fasta, GenericTextFile
 from typing import Union, Dict, List
 import argparse
 class BaseSolution:

@@ -19,7 +19,7 @@ import os
 abs_file_path = os.path.abspath(__file__)
 root_dir_path = os.path.dirname(abs_file_path)
 subdir_names = ["code", "data", "test"]
-file_names = ["ai.txt"]
+file_names = ["ai.md"]
 
 print(abs_file_path)
 
@@ -43,7 +43,6 @@ parser.add_argument("week_name", nargs="?", help="The number/name of the week th
 args = parser.parse_args()
 create_assignment_directory(week_name=args.week_name)
 
-   
 
 
 

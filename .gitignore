@@ -1,14 +1,13 @@
-# existing content (if any)
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# Ignore everything
+*
 
+# But not these files...
 !*.py
+!*.md
 !*.yaml
 !*.yml
 !*.codon
-!*.txt
 !README
 !README.*
-!*.md
+!*.zip
+!*.tar

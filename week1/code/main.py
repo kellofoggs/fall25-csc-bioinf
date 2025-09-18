@@ -1,6 +1,48 @@
-# from Utilities.InputFileTools import GenericTextFile, Fasta
+'''This script constructs the n longest contigs for a Debruijn Graph following an example on Github. This example is linked in the README and is not free of errors. '''
+
+from utilities.file_tools import GenericTextFile, Fasta
+from utilities.dna import DNAStringTools
+from datetime import datetime as dt
+from dbg import DebruijnGraph
+
+import sys
 
 
-# with open("/home/kelloggs/fall25-csc-bioinf/week1/data/inputs/short_1.fasta") as file:
-#     strings = Fasta.get_fasta_as_list(file)
-#     print(strings)
+
+
+def get_reads_from_dir(directory_path) -> list[str]:
+    '''
+    This function looks for a dir of a specific name in data/inputs. 
+    The dir it finds should at the minimum have the following elements.
+    
+    week1/data/inputs/
+        directory_path/
+        ├── long.fasta
+        ├── short_1.fasta
+        └── short_2.fasta
+    '''
+    reads_list:list[str] = []
+    expected_file_names = ["short_1.fasta", "short_2.fasta", "long.fasta"]
+    for fasta_file_name in expected_file_names:
+        with open(f"{directory_path}/{fasta_file_name}", 'r') as fasta_file:
+            fasta_file_content = fasta_file.read()
+            reads_list.extend(Fasta.get_fasta_as_list(fasta_file_content))
+    return reads_list
+
+def main(data_dir_path):
+    # Construct De Bruijn Graph
+    strings = get_reads_from_dir(data_dir_path)
+    my_graph = DebruijnGraph(strings, 25)
+
+    # Write the resulting m longest contigs to the file
+    with open(f"{data_dir_path}/contig.fasta", 'w') as output_file:
+        
+        for i in range(20):
+            contig = my_graph.get_longest_contig()
+            print(i, len(contig))
+            output_file.write( f">contig_{i}\n{contig}\n")
+
+
+data_dir_path_arg = sys.argv[1] 
+main(data_dir_path_arg)
+
