@@ -81,7 +81,7 @@ def get_contig_lengths(data_dir_path):
     
 def python_run(data_dir_path: str):
     # subprocess.run(f"pwd && cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path} > /dev/null",shell=True)  
-    subprocess.run(f"pwd && cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path}",exit=True,shell=True)  
+    subprocess.run(f"pwd && cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path}",check==True,shell=True)  
 
     n_50 = calculate_N50(get_contig_lengths(data_dir_path))
     return n_50
