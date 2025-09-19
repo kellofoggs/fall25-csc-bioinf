@@ -13,3 +13,7 @@ Definitions:
 k-mer: A string of length k, in this case the k-mers are substrings of reads
 read: A representation of a sampled sequence of nucleotides
 Contig: Collection of overlapping DNA segnments or fragments that are put together to form a continuous sequence of DNA (this is representative of a single defined region of a genome)
+
+Unfortunate side effects of a new language:
+
+Unfortunately I do not know how to properly setup an analog to the Python interpreter's PYTHONPATH environment variable in Codon, so I have to place all the files in the same directory as main.py for imports to work properly.

@@ -17,6 +17,7 @@ __pycache__/
 !README.*
 !*.zip
 !*.tar
+!.git*
 
 # Allow week[number] directories and their contents
 !week*/
