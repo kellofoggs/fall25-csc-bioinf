@@ -12,6 +12,7 @@
 !*.zip
 !*.tar
 
+*.pyc
 # Allow week[number] directories and their contents
 !week*/
 !week*/**

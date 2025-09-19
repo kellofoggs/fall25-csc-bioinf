@@ -42,7 +42,3 @@ parser = argparse.ArgumentParser(description=arguments_description)
 parser.add_argument("week_name", nargs="?", help="The number/name of the week that the assignment is for")
 args = parser.parse_args()
 create_assignment_directory(week_name=args.week_name)
-
-
-
-

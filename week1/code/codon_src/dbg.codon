@@ -1,0 +1,266 @@
+from dna import DNAStringTools
+
+class DeBruijnNode[E]:
+    # A Node that holds a k-mer and other fields useful for building a DeBruijn Graph
+
+    # _adjacent_nodes: set[Optional[DeBruijnNode[E]]] # type: ignore # A list of nodes that this node has an edge going towards
+    _adjacent_nodes: set[int]
+    content : E
+    _num_nodes: int # How often this node that represents a k_mer appears each time
+    max_depth_child_idx: int # type: ignore
+    path_depth: int
+
+    def __init__(self, content:E):
+        self.content = content
+        self._adjacent_nodes = set()
+        self._num_nodes = 0 # How many times this node appears in the graph
+    
+    def reset_path_data(self):
+        self.max_depth_child_idx = -1
+        self.path_depth = 0
+
+    @property
+    def children(self) -> list[int]: # type: ignore
+        # adjacent_nodes: set = self._adjacent_nodes
+        return list(self._adjacent_nodes)
+    @property
+    def sorted_children(self) -> list[Optional[DeBruijnNode[E]]]: # type: ignore
+        return sorted(self.children, key= lambda child_node: child_node.num_nodes, reverse=True)
+
+    @property
+    def num_nodes(self) -> int:
+        return self._num_nodes
+
+    def add_kmer(self) -> None: 
+        '''
+        Increment the count of how many times this kmer appears in the graph
+        '''
+        self._num_nodes += 1
+
+    def add_child(self, child_node_idx: int): # type: ignore
+        self._adjacent_nodes.add(child_node_idx) # Use a set to avoid duplicate edges
+
+    
+    def __eq__(self, other: DeBruijnNode ) -> bool: # type: ignore
+        if not isinstance(other, DeBruijnNode):
+            return False
+        else:
+            return self.content == other.content
+        
+    def __ne__(self, other: DeBruijnNode ) -> bool: # type: ignore
+        '''
+        Explicitly required as it looks like codon does not automatically infer this from __eq__
+        '''
+        return not self.__eq__(other)
+    
+    def remove_children(self, children_to_remove:set[int]): # type: ignore
+        self._adjacent_nodes = self._adjacent_nodes - children_to_remove
+    
+    def __hash__(self):
+        return hash(self.content) 
+    
+    def __str__(self):
+        return f"{self.content}"
+
+    def __repr__(self):
+        return self.__str__()[-1]
+
+
+
+class DebruijnGraph:
+
+    '''
+    A DeBruijn Graph for the implementation of Hamiltonian Path  using adjacency list representation.
+    This graph contains nodes for each kmer and their reverse complements.
+
+    '''
+    k : int
+    # kmer_to_node_dict: dict[str, DeBruijnNode[str]]
+    visited_set: set[int]
+
+    idx_nodes_map: dict[int, DeBruijnNode[str]]
+    kmer_to_node_idx: dict[str, int]
+    def __init__(self, reads: list[str], k:int):
+        self.visited_set: set[int] = set()
+        # self.kmer_to_node_dict = {}
+        self.idx_nodes_map = dict()
+        self.kmer_to_node_idx = dict()
+        self._generate_de_bruijn_graph(reads, k)
+
+    def print_dbg(self):
+        kmer_nodes = sorted([node for node in self.idx_nodes_map.values()], key= lambda x: ( x.num_nodes, x.content))
+        for node in kmer_nodes:
+            print(f"{node.content} ({node.num_nodes}) -> {sorted([self.idx_nodes_map[child].content for child in node.children])}")
+
+    
+    
+    def _generate_de_bruijn_graph(self, reads: list[str], k:int) -> None:
+        '''
+        Function that generates a DeBruijn graph from a list of reads and a kmer length k.
+        This graph includes both the kmers from the reads and their reverse complements.
+        Args:
+            reads (list[str]): A list of DNA strings (reads) to generate the DeBruijn graph from
+            k (int): The length of the kmers to generate from the reads
+        Returns:
+            None: The graph is stored in the instance variable kmer_to_node_dict
+        '''
+        for read in reads:
+            self._add_read_kmers_to_graph(read, k)
+            self._add_read_kmers_to_graph(DNAStringTools.reverse_complement_dna(read), k)
+
+    def _add_read_kmers_to_graph(self, read: str, k:int) -> None:
+        '''
+        Adds all but the last kmers from a read to the DeBruijn graph
+        Args:
+            read (str): The DNA string (read) to generate the kmers from
+            k (int): The length of the kmers to generate from the read
+        Returns:
+            None: The graph is stored in the instance variable kmer_to_node_dict
+        '''
+        prev_kmer = None
+        # In the original Python implementation the last kmer is erroneously omitted from the result,
+        # This behavior is replicated here for consistency with the original implementation. 
+        # Unfortunately for us that means that I will not be using a generator here as I need to look ahead one kmer, this would required me to either rewrite the generator function or write a wrapper for it
+        # I have opted to consume the generator into a list instead
+        # for curr_kmer in DNAStringTools.generate_kmers(read, k): # My original implementation that includes the last kmer, which is the correct behavior
+
+        for curr_kmer in list(DNAStringTools.generate_kmers(read, k))[:-1]:
+            if prev_kmer is None:
+                prev_kmer = curr_kmer
+                continue
+            self._add_arc(prev_kmer,curr_kmer)
+
+            prev_kmer = curr_kmer
+
+
+    def _add_arc(self, kmer_from:str, kmer_to:str):
+        '''
+        Adds a directed edge from kmer_from to kmer_to in the DeBruijn graph.
+        If the nodes for the kmers do not exist, they are created.
+        Args:
+            kmer_from (str): The kmer that the edge is directed from
+            kmer_to (str): The kmer that the edge is directed to
+        '''
+        node_one = self.idx_nodes_map[self._add_node(kmer_from)]
+        node_two_idx = self._add_node(kmer_to)
+        node_one.add_child(node_two_idx) # Use object reference instead of idx used by Zhongyu Chen
+
+    def _add_node(self, kmer:str) -> int:
+        '''
+        Adds a new node to the DeBruijn graph if it doesn't already exist, returns the node's object reference.
+        Args:
+            kmer (str): The kmer that the node represents
+        Returns:
+            DeBruijnNode[str]: The node object reference for the kmer
+        '''       
+        node_idx:int 
+        if kmer not in self.kmer_to_node_idx:
+            node_idx =  len(self.kmer_to_node_idx)
+            self.kmer_to_node_idx[kmer] =node_idx
+            self.idx_nodes_map[node_idx] = DeBruijnNode(kmer)
+        else:
+            node_idx = self.kmer_to_node_idx[kmer]
+        
+        self.idx_nodes_map[node_idx].add_kmer()
+        return node_idx
+        # if kmer not in self.kmer_to_node_dict:
+        #     # Create a new node object if it doesn't exist
+        #     # node = DeBruijnNode(kmer)  # In the original implementation the number of nodes was tracked with a value incremented on each Node creation
+        #     # This value was neither decremented or used even if nodes were removed, so I don't see the point of it
+        #     self.kmer_to_node_dict[kmer] = DeBruijnNode(kmer) # We can get the same functionality here using len of dict as this is constant time operation in python
+        # node = self.kmer_to_node_dict[kmer]
+        # node.add_kmer()
+        # return node
+
+
+
+    # Contig construction methods    
+    def get_longest_contig(self):
+        self.visited_set: set[int] = set()
+        for idx in self.idx_nodes_map.keys():
+            # Reset the max path depth for all nodes
+            self.idx_nodes_map[idx].reset_path_data()
+        longest_path = self._construct_globally_longest_path()
+
+        # Concatenate kmers so that they form a contig
+        output = str(self.idx_nodes_map[longest_path[0]]) + "".join(list(map(lambda x: self.idx_nodes_map[x].__str__()[-1], longest_path[1:])))
+        self.delete_path(longest_path)
+
+        return output
+
+    def _construct_globally_longest_path(self) -> list[int]: # type: ignore
+        max_depth = 0
+        deepest_node_idx: int = -1
+        for node_idx in self.idx_nodes_map.keys():
+            # node = self.kmer_to_node_dict[node_idx]
+            depth:int  = self._get_path_depth_recur(node_idx)
+            if depth > max_depth:
+                max_depth = depth
+                deepest_node_idx = node_idx
+            
+        path: list[int] = []
+        while deepest_node_idx  >= 0:
+            path.append(deepest_node_idx)
+            deepest_node_idx = self.idx_nodes_map[deepest_node_idx].max_depth_child_idx
+        return path
+              
+    def get_sorted_children(self, idx:int) -> list[int]:
+        children:list[int] = sorted(self.idx_nodes_map[idx].children, key= lambda x: self.idx_nodes_map[x].num_nodes, reverse=True)
+        return children
+    
+    def _get_path_depth_recur(self, curr_node_idx: int) -> int:   # type: ignore
+        max_depth = 0
+        max_depth_child_idx: int = -1 # type: ignore
+
+        if not curr_node_idx  in self.visited_set:
+            self.visited_set.add(curr_node_idx)
+            children_indices = self.get_sorted_children(curr_node_idx)
+            for child_idx in children_indices:
+                depth = self._get_path_depth_recur(child_idx) # Go down each path recursively
+                # Come back up comparing path length to other path lengths at latest branch
+                # Keep the deepest branch path
+                if depth > max_depth:
+                    max_depth_child_idx = child_idx
+                    max_depth = depth
+            
+            self.idx_nodes_map[curr_node_idx].path_depth = max_depth + 1
+            self.idx_nodes_map[curr_node_idx].max_depth_child_idx = max_depth_child_idx
+        return self.idx_nodes_map[curr_node_idx].path_depth  # max_depth_child
+    
+    def delete_path(self, path: list[int]): # type: ignore
+        for idx in path:
+            del self.idx_nodes_map[idx]
+        path_set:set[int] = set(path) 
+        for idx in self.idx_nodes_map.keys():
+            self.idx_nodes_map[idx].remove_children(path_set)
+
+
+
+
+
+    # Old method for solving a problem on Rosalind.INFO that required generating a DeBruijn graph from a list of (k+1)-mers
+    # @staticmethod
+    # def generate_de_bruijn_graph(k_plus_1_mer_list:list[str], is_adjacency_map:bool=False) -> Union[list[tuple[str, str]], dict[str,list[str]] ]:
+    #     '''
+    #     Function that generates a debruijn graph given a list of (k+1)-mers in two formats:
+    #         Adjacency map
+    #         Edge list
+    #     This is set by the optional parameter is_adjacency_map which is a boolean, by default it is set to return
+    #     an edge list. Set to true to return an adjacency map. 
+    #     '''
+    #     k = len(k_plus_1_mer_list[0]) -1 
+        
+    #     if not is_adjacency_map:
+
+    #         debruijn_edges:list[tuple[str, str]] = []
+    #         for k_plus_1_mer in k_plus_1_mer_list:
+    #             edge_tuple = (k_plus_1_mer[:k], k_plus_1_mer[1:])
+    #             debruijn_edges.append(edge_tuple)
+    #         return debruijn_edges
+        
+    #     else:
+    #         adjacency_map = defaultdict(list)
+    #         for k_plus_1_mer in k_plus_1_mer_list:
+    #             adjacency_map[k_plus_1_mer[:k]].append( k_plus_1_mer[1:])
+    #         return adjacency_map
+
