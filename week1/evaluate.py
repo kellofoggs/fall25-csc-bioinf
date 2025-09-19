@@ -97,7 +97,13 @@ def run_setup(source_code_dir_path):
     Unzip files and compile source code using codon and release flag
     '''
     codon_compile_cmd = "~./codon build -release code/codon_src/main.codon -o main_codon"
-    subprocess.run(f'pwd && cd {base_dir_path} && {codon_compile_cmd}', shell=True, check=True)
+    try:
+        result = subprocess.run(f'pwd && cd {base_dir_path} && {codon_compile_cmd}', shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        print(base_dir_path)
+        print(codon_compile_cmd)
+        print(e.stdout)
+        print(e.stderr)
     data_zip_glob = "data*.zip"
     for zip_path in glob.glob(os.path.join(week_data_dir, data_zip_glob)):
         os.makedirs(week_data_dir, exist_ok=True)
