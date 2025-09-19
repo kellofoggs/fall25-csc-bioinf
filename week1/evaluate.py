@@ -58,6 +58,7 @@ def main():
         codon_n50 = codon_run(data_dir_path)     
         end = dt.now()
         codon_result = [directory, "codon", str(end-start).split('.')[0], codon_n50]
+        
         output_table.append(python_result)
         output_table.append(codon_result)
 
@@ -81,13 +82,13 @@ def get_contig_lengths(data_dir_path):
     
 def python_run(data_dir_path: str):
     # subprocess.run(f"pwd && cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path} > /dev/null",shell=True)  
-    subprocess.run(f"pwd && cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path}",check=True,shell=True)  
+    subprocess.run(f"pwd  && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path}",cwd= base_dir_path, check=True,shell=True)  
 
     n_50 = calculate_N50(get_contig_lengths(data_dir_path))
     return n_50
 
 def codon_run(data_dir_path: str):
-    subprocess.run(f"pwd && cd {base_dir_path} && ulimit -s 8192000 && ./main_codon {data_dir_path}",shell=True, check=True)
+    subprocess.run(f"pwd && ulimit -s 8192000 && ./main_codon {data_dir_path}",cwd= base_dir_path, shell=True, check=True)
     n_50 = calculate_N50(get_contig_lengths(data_dir_path))
     return n_50
 
@@ -96,14 +97,14 @@ def run_setup(source_code_dir_path):
     '''
     Unzip files and compile source code using codon and release flag
     '''
-    codon_compile_cmd = "/.codon build -release code/codon_src/main.codon -o main_codon"
-    try:
-        result = subprocess.run(f'pwd && cd {base_dir_path} && {codon_compile_cmd}', shell=True, check=True)
-    except subprocess.CalledProcessError as e:
-        print(base_dir_path)
-        print(codon_compile_cmd)
-        print(e.stdout)
-        print(e.stderr)
+    codon_compile_cmd = "~/.codon build -release code/codon_src/main.codon -o main_codon"
+    # try:
+    result = subprocess.run(f'pwd && {codon_compile_cmd}', shell=True, check=True, cwd= base_dir_path)
+    # except subprocess.CalledProcessError as e:
+    #     print(base_dir_path)
+    #     print(codon_compile_cmd)
+    #     print(e.stdout)
+    #     print(e.stderr)
     data_zip_glob = "data*.zip"
     for zip_path in glob.glob(os.path.join(week_data_dir, data_zip_glob)):
         os.makedirs(week_data_dir, exist_ok=True)
