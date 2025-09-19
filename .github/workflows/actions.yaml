@@ -5,28 +5,39 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      # 1️⃣ Checkout repository first
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Install Python distutils
-        run: sudo apt-get update && sudo apt-get install -y python3-distutils
 
+      # 2️⃣ Setup Python 3.12
+      - name: Setup Python Interpreter
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      # 3️⃣ Install Codon
       - name: Install Codon
         run: |
           mkdir -p ${HOME}/.codon
           curl -L https://github.com/exaloop/codon/releases/download/v0.19.3/codon-linux-x86_64.tar.gz | tar zxvf - --strip-components=1 -C ${HOME}/.codon
           curl -L https://github.com/exaloop/seq/releases/download/v0.11.5/seq-linux-x86_64.tar.gz | tar zxvf - -C ${HOME}/.codon/lib/codon/plugins
+          # Persist PATH for subsequent steps
           echo "PATH=${HOME}/.codon/bin:${PATH}" >> $GITHUB_ENV
 
-      - name: Setup Python Interpreter
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.13'
-
+      # 4️⃣ Set up Codon Python bridge
       - name: Set up Codon Python bridge
         run: |
           CODON_PYTHON=$(curl -L https://raw.githubusercontent.com/exaloop/codon/refs/heads/develop/test/python/find-python-library.py | python)
           echo "CODON_PYTHON=$CODON_PYTHON" >> $GITHUB_ENV
           echo "Found Python at: $CODON_PYTHON"
 
+      # 5️⃣ Optional: info messages
+      - name: Info messages
+        run: |
+          echo "🎉 The workflow was triggered by ${{ github.event_name }}."
+          echo "🐧 Running on ${{ runner.os }}."
+          echo "🔎 Branch: ${{ github.ref }} | Repository: ${{ github.repository }}"
+
+      # 6️⃣ Run your Week 1 evaluation
       - name: Week 1
         run: python week1/evaluate.py
