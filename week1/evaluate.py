@@ -70,7 +70,7 @@ def main():
             print("----------------------------------------------------------------")
             index = index + 1
     return results_list
-    # subprocess.run(f"cd {week_data_dir} && {[]}")
+    # subprocess.run(f"pwd && cd {week_data_dir} && {[]}")
 
 
 
@@ -80,14 +80,14 @@ def get_contig_lengths(data_dir_path):
         return list(map(len, contigs))
     
 def python_run(data_dir_path: str):
-    # subprocess.run(f"cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path} > /dev/null",shell=True)  
-    subprocess.run(f"cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path}",exit=True,shell=True)  
+    # subprocess.run(f"pwd && cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path} > /dev/null",shell=True)  
+    subprocess.run(f"pwd && cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path}",exit=True,shell=True)  
 
     n_50 = calculate_N50(get_contig_lengths(data_dir_path))
     return n_50
 
 def codon_run(data_dir_path: str):
-    subprocess.run(f"cd {base_dir_path} && ulimit -s 8192000 && ./main_codon {data_dir_path}",shell=True, check=True)
+    subprocess.run(f"pwd && cd {base_dir_path} && ulimit -s 8192000 && ./main_codon {data_dir_path}",shell=True, check=True)
     n_50 = calculate_N50(get_contig_lengths(data_dir_path))
     return n_50
 
@@ -96,8 +96,8 @@ def run_setup(source_code_dir_path):
     '''
     Unzip files and compile source code using codon and release flag
     '''
-    codon_compile_cmd = "codon build -release code/codon_src/main.codon -o main_codon"
-    subprocess.run(f'cd {base_dir_path} && {codon_compile_cmd}', shell=True, check=True)
+    codon_compile_cmd = "~./codon build -release code/codon_src/main.codon -o main_codon"
+    subprocess.run(f'pwd && cd {base_dir_path} && {codon_compile_cmd}', shell=True, check=True)
     data_zip_glob = "data*.zip"
     for zip_path in glob.glob(os.path.join(week_data_dir, data_zip_glob)):
         os.makedirs(week_data_dir, exist_ok=True)
