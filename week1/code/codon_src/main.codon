@@ -41,12 +41,12 @@ def main(data_dir_path):
         
         for i in range(20):
             contig = my_graph.get_longest_contig()
-            print(i, len(contig))
+            # print(i, len(contig))
             output_file.write( f">contig_{i}\n{contig}\n")
 
 
 data_dir_path_arg = sys.argv[1] 
-start = dt.now()
+# start = dt.now()
 main(data_dir_path_arg)
-end = dt.now()
-print(end-start)
+# end = dt.now()
+# print(end-start)

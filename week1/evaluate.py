@@ -42,6 +42,8 @@ def main():
     source_code_dir_path = os.path.join(base_dir_path, "code")
     run_setup(source_code_dir_path)
     data_directories = ["data1","data2","data3","data4"]
+    # data_directories = ["data4"]
+
     results_list = []
     output_table = [["Dataset", "Language","Runtime","N50"]]
 
@@ -65,7 +67,7 @@ def main():
     for row in output_table:
         print("{:<15} {:<15} {:<15} {:<15}".format(*row))
         if index == 0:
-            print("________________________________________________________________\n")
+            print("----------------------------------------------------------------")
             index = index + 1
     return results_list
     # subprocess.run(f"cd {week_data_dir} && {[]}")
@@ -78,12 +80,14 @@ def get_contig_lengths(data_dir_path):
         return list(map(len, contigs))
     
 def python_run(data_dir_path: str):
-    subprocess.run(f"cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path} > /dev/null",shell=True)  
+    # subprocess.run(f"cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path} > /dev/null",shell=True)  
+    subprocess.run(f"cd {base_dir_path} && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path}",shell=True)  
+
     n_50 = calculate_N50(get_contig_lengths(data_dir_path))
     return n_50
 
 def codon_run(data_dir_path: str):
-    subprocess.run(f"cd {base_dir_path} && ulimit -s 8192000 && ./main_codon {data_dir_path} > /dev/null",shell=True)
+    subprocess.run(f"cd {base_dir_path} && ulimit -s 8192000 && ./main_codon {data_dir_path}",shell=True)
     n_50 = calculate_N50(get_contig_lengths(data_dir_path))
     return n_50
 

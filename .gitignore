@@ -1,6 +1,12 @@
 # Ignore everything
 *
 
+# Always ignore Python bytecode
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
 # But not these files...
 !*.py
 !*.md
@@ -12,8 +18,11 @@
 !*.zip
 !*.tar
 
-*.pyc
 # Allow week[number] directories and their contents
 !week*/
 !week*/**
 !utilities/
+
+# Re-ignore .pyc files even in allowed dirs
+week/**/*.pyc
+utilities/**/*.pyc

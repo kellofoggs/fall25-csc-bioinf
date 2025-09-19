@@ -10,7 +10,7 @@ sys.setrecursionlimit(1000000)
 if __name__ == "__main__":
 
     argv = sys.argv
-    start = dt.now()
+    # start = dt.now()
     short1, short2, long1 = read_data(os.path.join('./', argv[1]))
 
     k = 25
@@ -21,8 +21,8 @@ if __name__ == "__main__":
             c = dbg.get_longest_contig()
             if c is None:
                 break
-            print(i, len(c))
+            # print(i, len(c))
             f.write('>contig_%d\n' % i)
             f.write(c + '\n')
-    end = dt.now()
-    print(end-start)
+    # end = dt.now()
+    # print(end-start)
