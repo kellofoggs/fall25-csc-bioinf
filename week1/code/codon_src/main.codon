@@ -34,16 +34,19 @@ def get_reads_from_dir(directory_path) -> list[str]:
 def main(data_dir_path):
     # Construct De Bruijn Graph
     strings = get_reads_from_dir(data_dir_path)
-    my_graph = DebruijnGraph(strings, 25)
-
+    kmer_size = 25
+    my_graph = DebruijnGraph(strings, kmer_size)
+    num_contigs = 20
     # Write the resulting m longest contigs to the file
     with open(f"{data_dir_path}/contig.fasta", 'w') as output_file:
-        
-        for i in range(20):
-            contig = my_graph.get_longest_contig()
-            # print(i, len(contig))
-            output_file.write( f">contig_{i}\n{contig}\n")
-
+        try:
+            for i in range(num_contigs):
+                contig = my_graph.get_longest_contig()
+                # print(i, len(contig))
+                output_file.write( f">contig_{i}\n{contig}\n")
+        finally:
+            pass
+            # Do nothing but stop writing when you encounter an error with writing.
 
 data_dir_path_arg = sys.argv[1] 
 # start = dt.now()
