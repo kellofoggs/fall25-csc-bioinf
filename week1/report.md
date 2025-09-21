@@ -17,16 +17,16 @@ Across all four data sets the codon impplementation was significantly faster tha
 
 The results are as follows:
 
-Dataset         Language        Runtime         N50            
-----------------------------------------------------------------
-data1           python          0:00:16         9990           
-data1           codon           0:00:07         9990           
-data2           python          0:00:34         9992           
-data2           codon           0:00:17         9992           
-data3           python          0:00:39         9824           
-data3           codon           0:00:17         9824           
-data4           python          0:07:39         159255         
-data4           codon           0:03:11         159255         
+|Dataset|Language|        Runtime|         N50|            
+|-------|--------|---------------|------------|
+data1|           python|          0:00:16|         9990|           
+data1|          codon|           0:00:07|         9990|           
+data2|           python|          0:00:34|         9992|           
+data2|           codon|           0:00:17|         9992|          
+data3|           python|          0:00:39|         9824|           
+data3|           codon|           0:00:17|         9824|           
+data4|           python|          0:07:39|         159255|         
+data4|           codon|           0:03:11|         159255|         
 
 The codon implementation was on average approximately 100% faster than the python implementation across all four datasets. The N50 score was identical across both implementations for all four datasets.
 
@@ -70,3 +70,4 @@ The assembler will output a list of contigs in a file named contigs.fasta in the
 * Use smaller ints for idx to conserve memory
 * store graph as a list of edge objects where repeat edges are represented as 
 * Add support for arguments to change kmer size and number of contigs to output instead of editing source code.
+* Consider a graph library for more efficient graph representation and path algorithms.
