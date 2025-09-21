@@ -27,5 +27,19 @@ jobs:
 
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
 
-      - name: Week 1
-        run: python week1/evaluate.py
+      # - name: "Week 1 -$"
+      #   run: python week1/evaluate.py
+      - name: Detect changed weeks
+        id: detect
+        run: |
+          weeks=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+                  | grep '^week[0-9]\+/' \
+                  | cut -d/ -f1 | sort -u)
+          echo "weeks=$weeks" >> $GITHUB_OUTPUT
+
+      - name: Run evaluations
+        run: |
+          for w in ${{ steps.detect.outputs.weeks }}; do
+            echo "Running evaluation for $w..."
+            python $w/evaluate.py
+          done
