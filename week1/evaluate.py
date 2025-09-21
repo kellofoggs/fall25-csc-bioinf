@@ -86,7 +86,9 @@ def run_setup(source_code_dir_path):
     '''
     Unzip files and compile source code using codon and release flag
     '''
-    codon_compile_cmd = "~/.codon/bin/codon build -release code/codon_src/main.codon -o main_codon"
+    # codon_compile_cmd = "~/.codon/bin/codon build -release code/codon_src/main.codon -o main_codon"
+    codon_compile_cmd = "codon build -release code/codon_src/main.codon -o main_codon"
+
     # try:
     result = subprocess.run(f'pwd && {codon_compile_cmd}', stdout=subprocess.DEVNULL, shell=True, check=True, cwd= base_dir_path)
     # except subprocess.CalledProcessError as e:
