@@ -19,7 +19,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0   # fetch full history so git diff works
+          fetch-depth: 0   # ensure full history so git diff works
 
       - name: Setup Python Interpreter
         uses: actions/setup-python@v6
@@ -47,7 +47,15 @@ jobs:
                     | grep '^week[0-9]\+/' \
                     | cut -d/ -f1 | sort -u)
           fi
+
           echo "weeks=$weeks" >> $GITHUB_OUTPUT
+
+          # Set run name dynamically
+          if [ -n "$weeks" ]; then
+            echo "GITHUB_RUN_NAME=Evaluating $weeks" >> $GITHUB_ENV
+          else
+            echo "GITHUB_RUN_NAME=Evaluating (no week changes)" >> $GITHUB_ENV
+          fi
 
       - name: Run evaluations
         run: |
