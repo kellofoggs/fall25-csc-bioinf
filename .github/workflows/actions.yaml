@@ -1,5 +1,5 @@
 name: Github CI
-on:
+on: 
   push:
 
 jobs:
@@ -8,38 +8,31 @@ jobs:
     outputs:
       weeks: ${{ steps.detect.outputs.weeks_json }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0   # full history for git diff
 
-      - name: Show workspace
-        run: echo "GITHUB WORKSPACE: $GITHUB_WORKSPACE"
-
       - id: detect
-        name: Detect changed weeks
         run: |
-          set -euo pipefail
-
           if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            base=$(git hash-object -t tree /dev/null)
-            changed=$(git diff --name-only "$base" "${{ github.sha }}" \
-              | grep -E '^week[0-9]+/' \
+            weeks=$(git diff --name-only $(git hash-object -t tree /dev/null) ${{ github.sha }} \
+              | grep '^week[0-9]\+/' \
               | cut -d/ -f1 | sort -u || true)
           else
-            changed=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" \
-              | grep -E '^week[0-9]+/' \
+            weeks=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+              | grep '^week[0-9]\+/' \
               | cut -d/ -f1 | sort -u || true)
           fi
 
-          if [ -n "$changed" ]; then
-            weeks_json=$(printf '%s\n' "$changed" | jq -R . | jq -s .)
+          if [ -n "$weeks" ]; then
+            weeks_json=$(printf '%s\n' $weeks | jq -R . | jq -s .)
           else
             weeks_json="[]"
           fi
 
           echo "weeks_json=$weeks_json" >> $GITHUB_OUTPUT
           echo "Detected weeks: $weeks_json"
+          echo "Github workspace: $GITHUB_WORKSPACE"
 
   evaluate:
     needs: detect
@@ -50,8 +43,7 @@ jobs:
         week: ${{ fromJSON(needs.detect.outputs.weeks) }}
     name: Evaluate ${{ matrix.week }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -77,16 +69,5 @@ jobs:
       - name: Run evaluation
         run: |
           echo "Running evaluation for ${{ matrix.week }}..."
-          python "${{ matrix.week }}/evaluate.py"
-
-      - name: Append report to job summary (if present)
-        run: |
-          if [ -f "${{ matrix.week }}/report.md" ]; then
-            echo "## Report for ${{ matrix.week }}" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            cat "${{ matrix.week }}/report.md" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "---" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ No report.md found for ${{ matrix.week }}" >> $GITHUB_STEP_SUMMARY
-          fi
+          python ${{ matrix.week }}/evaluate.py
+          cat ${{ matrix.week }}/report.md >>$GITHUB_STEP_SUMMARY
