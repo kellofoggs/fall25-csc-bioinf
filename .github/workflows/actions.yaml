@@ -10,27 +10,32 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          fetch-depth: 0   # full history for git diff
 
       - id: detect
         run: |
           if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
             weeks=$(git diff --name-only $(git hash-object -t tree /dev/null) ${{ github.sha }} \
-                    | grep '^week[0-9]\+/' \
-                    | cut -d/ -f1 | sort -u)
+              | grep '^week[0-9]\+/' \
+              | cut -d/ -f1 | sort -u || true)
           else
             weeks=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
-                    | grep '^week[0-9]\+/' \
-                    | cut -d/ -f1 | sort -u)
+              | grep '^week[0-9]\+/' \
+              | cut -d/ -f1 | sort -u || true)
           fi
 
-          # Convert to JSON array for matrix
-          weeks_json=$(printf '%s\n' $weeks | jq -R . | jq -s .)
+          if [ -n "$weeks" ]; then
+            weeks_json=$(printf '%s\n' $weeks | jq -R . | jq -s .)
+          else
+            weeks_json="[]"
+          fi
+
           echo "weeks_json=$weeks_json" >> $GITHUB_OUTPUT
+          echo "Detected weeks: $weeks_json"
 
   evaluate:
     needs: detect
-    if: ${{ needs.detect.outputs.weeks != '[]' }}  # skip if no week changes
+    if: ${{ needs.detect.outputs.weeks != '[]' }}   # skip if no weeks changed
     runs-on: ubuntu-latest
     strategy:
       matrix:
