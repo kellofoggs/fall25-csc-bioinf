@@ -69,3 +69,4 @@ jobs:
         run: |
           echo "Running evaluation for ${{ matrix.week }}..."
           python ${{ matrix.week }}/evaluate.py
+          cat ${{ matrix.week }}/report.md >> $GITHUB_STEP_SUMMARY
