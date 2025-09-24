@@ -16,7 +16,7 @@ class LinkedListNode:
 
     
     def __str__(self):
-        return f"Node Data = {self.content}"
+        return f'Node Data = {self.content}'
 
 class LinkedList:
 
@@ -62,10 +62,10 @@ class LinkedList:
         curr:LinkedListNode = self.head
         
         if not index >= 0:
-            raise IOError("The index must be at least 0")
+            raise IOError('The index must be at least 0')
         elif index > self.size:
 
-            raise IOError(f"The list size is not large enough to insert the node at the {index} index" )
+            raise IOError(f'The list size is not large enough to insert the node at the {index} index' )
 
         elif index == 0:
             temp = self.head
@@ -83,9 +83,9 @@ class LinkedList:
     def _get_node_by_index(self, index):
         '''Returns the node at the index if'''
         if self.size < index:
-            raise IOError("The index is not present in the linkedlist")
+            raise IOError('The index is not present in the linkedlist')
         elif index < 0 or isinstance(index, int):
-            raise IOError("The index provided must be a non negative integer")
+            raise IOError('The index provided must be a non negative integer')
         
         curr:LinkedListNode = self.head
         iter_index = 0
@@ -121,14 +121,14 @@ class LinkedList:
     
     def __str__(self):
         curr = self.head
-        output_str = "["
+        output_str = '['
         counter = 0
         while curr is not None:
             
-            output_str = output_str + f"{curr.content}, "
+            output_str = output_str + f'{curr.content}, '
             curr = curr.next
         
-        output_str = output_str + "]"
+        output_str = output_str + ']'
         return output_str
         pass
 
@@ -157,9 +157,9 @@ class SinglyLinkedNode(LinkedListNode):
 
 def main():
     li = LinkedList()
-    li.insert("A", 0)
-    li.insert("B", 0)
-    li.insert("C", 0)
+    li.insert('A', 0)
+    li.insert('B', 0)
+    li.insert('C', 0)
     curr = li.head
     while curr is not None:
         print(curr)

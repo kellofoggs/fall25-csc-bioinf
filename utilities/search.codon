@@ -1,4 +1,3 @@
-from typing import List
 
 class KMP:
 
@@ -8,7 +7,7 @@ class KMP:
     '''
 
     @staticmethod
-    def generate_lps(query_string:str)->List[str]:
+    def generate_lps(query_string:str)->list[str]:
         '''
         input: 
             query_string: The string that you would like to search for
@@ -42,7 +41,7 @@ class KMP:
     
 
     @staticmethod
-    def KMP_search(super_string:str,sub_string:str, find_all:bool=True) -> List[int]:
+    def KMP_search(super_string:str,sub_string:str, find_all:bool=True) -> list[int]:
         '''
         Inputs:
             super_string: A string we are searching within

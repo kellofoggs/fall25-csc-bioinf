@@ -1,0 +1,12 @@
+name: codon_bio
+channels:
+  - defaults
+dependencies:
+  - python=3.13
+  - biopython
+  - pip
+variables:
+  PYTHONPATH: <PATH_TO_ROSALIND_DIR> 
+  CODON_PATH: <PATH_TO_ROSALIND_DIR> 
+
+

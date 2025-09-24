@@ -6,7 +6,7 @@ class BaseSolution:
     file_name:str = None
     def __init__(self):
         self.parser = argparse.ArgumentParser()
-        self.parser.add_argument('-f',"--file", help="Path to the file (full or relative) that the script reads in as input")
+        self.parser.add_argument('-f','--file', help='Path to the file (full or relative) that the script reads in as input')
         args = self.parser.parse_args()
         
         self.file_name = args.file

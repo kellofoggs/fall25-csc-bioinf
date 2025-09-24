@@ -48,7 +48,7 @@ Y   163.06333
         '''
                 # print(Spectrometry._mono_isotope_mass_to_amino_acid)
         acid =  Spectrometry._mono_isotope_mass_to_amino_acid.get(round(mono_isotopic_mass, 4))
-        if acid is None: print(f"None mass: {mono_isotopic_mass}")
+        if acid is None: print(f'None mass: {mono_isotopic_mass}')
         return acid
         
 

@@ -5,10 +5,10 @@ def get_common_parser(description=None):
 
     # universal flag for file path
     parser.add_argument(
-        "-f", "--file",
+        '-f', '--file',
         type=str,
         required=True,
-        help="Path to input file"
+        help='Path to input file'
     )
 
     return parser

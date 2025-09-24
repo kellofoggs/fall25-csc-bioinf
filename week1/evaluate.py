@@ -6,11 +6,11 @@ import glob
 from datetime import datetime as dt
 
 base_dir_path = os.path.dirname(__file__)
-week_data_dir = os.path.join(base_dir_path, "data")
+week_data_dir = os.path.join(base_dir_path, 'data')
 
 
 # First compile the binary version using codon
-codon_binary_cmd_template = "./main_codon {data_dir_path}"
+codon_binary_cmd_template = './main_codon {data_dir_path}'
 
 def calculate_N50(contig_len_list:list[int]) -> int:
     total_len = sum(contig_len_list)
@@ -35,49 +35,49 @@ def create_contigs(data_dir:str):
 
 def main():
     # Firstly compile the binary for codon to avoid having to use codon run
-    source_code_dir_path = os.path.join(base_dir_path, "code")
+    source_code_dir_path = os.path.join(base_dir_path, 'code')
     run_setup(source_code_dir_path)
-    data_directories = ["data1","data2","data3","data4"]
+    data_directories = ['data1','data2','data3','data4']
 
-    output_table = [["Dataset", "Language","Runtime","N50"]]
+    output_table = [['Dataset', 'Language','Runtime','N50']]
 
     for directory in data_directories:
         data_dir_path = os.path.join(week_data_dir, directory)
         start = dt.now()
         python_n50 = python_run(data_dir_path)
         end = dt.now()
-        python_result = [directory, "python", str(end-start).split('.')[0], python_n50]
+        python_result = [directory, 'python', str(end-start).split('.')[0], python_n50]
 
         start = dt.now()
         codon_n50 = codon_run(data_dir_path)     
         end = dt.now()
-        codon_result = [directory, "codon", str(end-start).split('.')[0], codon_n50]
+        codon_result = [directory, 'codon', str(end-start).split('.')[0], codon_n50]
         
         output_table.append(python_result)
         output_table.append(codon_result)
 
     index = 0
     for row in output_table:
-        print("{:<15} {:<15} {:<15} {:<15}".format(*row))
+        print('{:<15} {:<15} {:<15} {:<15}'.format(*row))
         if index == 0:
-            print("----------------------------------------------------------------")
+            print('----------------------------------------------------------------')
             index = index + 1
 
 
 
 def get_contig_lengths(data_dir_path):
-    with open(os.path.join(base_dir_path,f"{data_dir_path}/contig.fasta")) as contig_file:
+    with open(os.path.join(base_dir_path,f'{data_dir_path}/contig.fasta')) as contig_file:
         contigs = Fasta.get_fasta_as_list(contig_file.read())
         return list(map(len, contigs))
     
 def python_run(data_dir_path: str):
-    subprocess.run(f"pwd  && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path} ",stdout=subprocess.DEVNULL, cwd= base_dir_path, check=True,shell=True)  
+    subprocess.run(f'pwd  && ulimit -s 8192000 && python code/pysrc/main.py {data_dir_path} ',stdout=subprocess.DEVNULL, cwd= base_dir_path, check=True,shell=True)  
 
     n_50 = calculate_N50(get_contig_lengths(data_dir_path))
     return n_50
 
 def codon_run(data_dir_path: str):
-    subprocess.run(f"pwd && ulimit -s 8192000 && ./main_codon {data_dir_path}",stdout=subprocess.DEVNULL,cwd= base_dir_path, shell=True, check=True)
+    subprocess.run(f'pwd && ulimit -s 8192000 && ./main_codon {data_dir_path}',stdout=subprocess.DEVNULL,cwd= base_dir_path, shell=True, check=True)
     n_50 = calculate_N50(get_contig_lengths(data_dir_path))
     return n_50
 
@@ -86,8 +86,8 @@ def run_setup(source_code_dir_path):
     '''
     Unzip files and compile source code using codon and release flag
     '''
-    # codon_compile_cmd = "~/.codon/bin/codon build -release code/codon_src/main.codon -o main_codon"
-    codon_compile_cmd = "codon build -release code/codon_src/main.codon -o main_codon"
+    # codon_compile_cmd = '~/.codon/bin/codon build -release code/codon_src/main.codon -o main_codon'
+    codon_compile_cmd = 'codon build -release code/codon_src/main.codon -o main_codon'
 
     # try:
     result = subprocess.run(f'pwd && {codon_compile_cmd}', stdout=subprocess.DEVNULL, shell=True, check=True, cwd= base_dir_path)
@@ -97,7 +97,7 @@ def run_setup(source_code_dir_path):
     #     print(e.stdout)
     #     print(e.stderr)
 
-    data_zip_glob = "data*.zip"
+    data_zip_glob = 'data*.zip'
     for zip_path in glob.glob(os.path.join(week_data_dir, data_zip_glob)):
         os.makedirs(week_data_dir, exist_ok=True)
 

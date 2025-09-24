@@ -14,7 +14,7 @@ def read_fasta(path, name):
 
 
 def read_data(path):
-    short1 = read_fasta(path, "short_1.fasta")
-    short2 = read_fasta(path, "short_2.fasta")
-    long1 = read_fasta(path, "long.fasta")
+    short1 = read_fasta(path, 'short_1.fasta')
+    short2 = read_fasta(path, 'short_2.fasta')
+    long1 = read_fasta(path, 'long.fasta')
     return short1, short2, long1

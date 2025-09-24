@@ -1,6 +1,6 @@
 
 from collections import Counter
-from search import KMP
+from utilities.search import KMP
 class DNAStringTools:
 
 

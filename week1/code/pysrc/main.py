@@ -7,7 +7,7 @@ from datetime import datetime as dt
 sys.setrecursionlimit(1000000)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     argv = sys.argv
     # start = dt.now()

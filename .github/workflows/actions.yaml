@@ -23,10 +23,21 @@ jobs:
         with:
           fetch-depth: 0   # ensure full history so git diff works
 
-      - name: Setup Python Interpreter
+      - name: Setup G;pba; Python Interpreter
         uses: actions/setup-python@v6
         with:
           python-version: '3.13' 
+
+
+      - name: Setup conda environment.yaml
+        run: pip install ruamel.yaml && python setup_env_yaml.py "environments/environment.yaml" "$GITHUB_WORKSPACE"
+
+      - name: Create conda environment
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: codon_bio
+          environment-file: ${{ github.workspace }}/environments/environment.yaml
+          auto-activate-base: false
 
       - name: Set up Codon Python bridge
         run: |
