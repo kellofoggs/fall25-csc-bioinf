@@ -24,6 +24,7 @@ __pycache__/
 !week*/**
 !utilities/
 !.github/**
+!environments/**
 # Re-ignore .pyc files even in allowed dirs
 week/**/*.pyc
 utilities/**/*.pyc
