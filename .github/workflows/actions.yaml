@@ -36,7 +36,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: codon_bio
-          environment-file: ${{ github.workspace }}/environments/environment.yaml
+          environment-file: /${{ github.workspace }}/environments/environment.yaml
           auto-activate-base: false
 
       - name: Set up Codon Python bridge
