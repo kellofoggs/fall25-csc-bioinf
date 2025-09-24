@@ -1,73 +1,67 @@
 name: Github CI
 on: 
   push:
-
+    # paths:
+    #   -"week*/**"
 jobs:
-  detect:
+  test:
     runs-on: ubuntu-latest
-    outputs:
-      weeks: ${{ steps.detect.outputs.weeks_json }}
     steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0   # full history for git diff
-
-      - id: detect
-        run: |
-          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            weeks=$(git diff --name-only $(git hash-object -t tree /dev/null) ${{ github.sha }} \
-              | grep '^week[0-9]\+/' \
-              | cut -d/ -f1 | sort -u || true)
-          else
-            weeks=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
-              | grep '^week[0-9]\+/' \
-              | cut -d/ -f1 | sort -u || true)
-          fi
-
-          if [ -n "$weeks" ]; then
-            weeks_json=$(printf '%s\n' $weeks | jq -R . | jq -s .)
-          else
-            weeks_json="[]"
-          fi
-
-          echo "weeks_json=$weeks_json" >> $GITHUB_OUTPUT
-          echo "Detected weeks: $weeks_json"
-          echo "Github workspace: $GITHUB_WORKSPACE"
-
-  evaluate:
-    needs: detect
-    if: ${{ needs.detect.outputs.weeks != '[]' }}   # skip if no weeks changed
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        week: ${{ fromJSON(needs.detect.outputs.weeks) }}
-    name: Evaluate ${{ matrix.week }}
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
 
       - name: Install Codon
         run: |
           mkdir -p ${HOME}/.codon
-          curl -L https://github.com/exaloop/codon/releases/download/v0.19.3/codon-linux-x86_64.tar.gz \
-            | tar zxvf - --strip-components=1 -C ${HOME}/.codon
-          curl -L https://github.com/exaloop/seq/releases/download/v0.11.5/seq-linux-x86_64.tar.gz \
-            | tar zxvf - -C ${HOME}/.codon/lib/codon/plugins
+          curl -L https://github.com/exaloop/codon/releases/download/v0.19.3/codon-linux-x86_64.tar.gz | tar zxvf - --strip-components=1 -C ${HOME}/.codon
+          curl -L https://github.com/exaloop/seq/releases/download/v0.11.5/seq-linux-x86_64.tar.gz | tar zxvf - -C ${HOME}/.codon/lib/codon/plugins
           echo "${HOME}/.codon/bin" >> $GITHUB_PATH
+
+      - name: Check out repository code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0   # ensure full history so git diff works
 
       - name: Setup Python Interpreter
         uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: '3.13' 
 
       - name: Set up Codon Python bridge
         run: |
           export CODON_PYTHON=$(curl -L https://raw.githubusercontent.com/exaloop/codon/refs/heads/develop/test/python/find-python-library.py | python)
           echo "Found Python at: ${CODON_PYTHON}"
 
-      - name: Run evaluation
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+
+      - name: Detect changed weeks
+        id: detect
         run: |
-          echo "Running evaluation for ${{ matrix.week }}..."
-          python ${{ matrix.week }}/evaluate.py
-          cat ${{ matrix.week }}/report.md >>$GITHUB_STEP_SUMMARY
+          # Handle first commit (before = 0000...)
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            weeks=$(git diff --name-only $(git hash-object -t tree /dev/null) ${{ github.sha }} \
+                    | grep '^week[0-9]\+/' \
+                    | cut -d/ -f1 | sort -u)
+          else
+            weeks=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+                    | grep '^week[0-9]\+/' \
+                    | cut -d/ -f1 | sort -u)
+          fi
+
+          echo "weeks=$weeks" >> $GITHUB_OUTPUT
+
+          # Set run name dynamically
+          if [ -n "$weeks" ]; then
+            echo "GITHUB_RUN_NAME=Evaluating $weeks" >> $GITHUB_ENV
+          else
+            echo "GITHUB_RUN_NAME=Evaluating (no week changes)" >> $GITHUB_ENV
+          fi
+
+      - name: Run evaluations
+        run: |
+          for w in ${{ steps.detect.outputs.weeks }}; do
+            echo "Running evaluation for $w..."
+            python $w/evaluate.py
+          done
