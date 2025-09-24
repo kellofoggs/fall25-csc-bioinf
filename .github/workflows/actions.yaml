@@ -30,13 +30,13 @@ jobs:
 
 
       - name: Setup conda environment.yaml
-        run: pip install ruamel.yaml && python .github/workflows/setup_env_yaml.py "environments/environment.yaml" "$GITHUB_WORKSPACE"
+        run: pip install ruamel.yaml && python .github/workflows//setup_env_yaml.py "environments/environment.yaml" "$GITHUB_WORKSPACE"
 
       - name: Create conda environment
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: codon_bio
-          environment-file: /${{ github.workspace }}/environments/environment.yaml
+          environment-file: environments/environment.yaml
           auto-activate-base: false
 
       - name: Set up Codon Python bridge
