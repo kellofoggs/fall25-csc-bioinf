@@ -30,7 +30,7 @@ jobs:
 
 
       - name: Setup conda environment.yaml
-        run: pip install ruamel.yaml && python setup_env_yaml.py "environments/environment.yaml" "$GITHUB_WORKSPACE"
+        run: pip install ruamel.yaml && python .github/workflows/setup_env_yaml.py "environments/environment.yaml" "$GITHUB_WORKSPACE"
 
       - name: Create conda environment
         uses: conda-incubator/setup-miniconda@v3
