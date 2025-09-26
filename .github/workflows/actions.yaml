@@ -47,32 +47,36 @@ jobs:
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
 
-      - name: Detect changed weeks
-        id: detect
-        run: |
-          # Handle first commit (before = 0000...)
-          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            weeks=$(git diff --name-only $(git hash-object -t tree /dev/null) ${{ github.sha }} \
-                    | grep '^week[0-9]\+/' \
-                    | cut -d/ -f1 | sort -u)
-          else
-            weeks=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
-                    | grep '^week[0-9]\+/' \
-                    | cut -d/ -f1 | sort -u)
-          fi
+      - name: Week 1
+        run: python week1/evaluate.py
 
-          echo "weeks=$weeks" >> $GITHUB_OUTPUT
 
-          # Set run name dynamically
-          if [ -n "$weeks" ]; then
-            echo "GITHUB_RUN_NAME=Evaluating $weeks" >> $GITHUB_ENV
-          else
-            echo "GITHUB_RUN_NAME=Evaluating (no week changes)" >> $GITHUB_ENV
-          fi
+      # - name: Detect changed weeks
+      #   id: detect
+      #   run: |
+      #     # Handle first commit (before = 0000...)
+      #     if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+      #       weeks=$(git diff --name-only $(git hash-object -t tree /dev/null) ${{ github.sha }} \
+      #               | grep '^week[0-9]\+/' \
+      #               | cut -d/ -f1 | sort -u)
+      #     else
+      #       weeks=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+      #               | grep '^week[0-9]\+/' \
+      #               | cut -d/ -f1 | sort -u)
+      #     fi
 
-      - name: Run evaluations
-        run: |
-          for w in ${{ steps.detect.outputs.weeks }}; do
-            echo "Running evaluation for $w..."
-            python $w/evaluate.py
-          done
+      #     echo "weeks=$weeks" >> $GITHUB_OUTPUT
+
+      #     # Set run name dynamically
+      #     if [ -n "$weeks" ]; then
+      #       echo "GITHUB_RUN_NAME=Evaluating $weeks" >> $GITHUB_ENV
+      #     else
+      #       echo "GITHUB_RUN_NAME=Evaluating (no week changes)" >> $GITHUB_ENV
+      #     fi
+
+      # - name: Run evaluations
+      #   run: |
+      #     for w in ${{ steps.detect.outputs.weeks }}; do
+      #       echo "Running evaluation for $w..."
+      #       python $w/evaluate.py
+      #     done
