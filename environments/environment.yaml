@@ -8,5 +8,5 @@ dependencies:
 variables:
   PYTHONPATH: <PATH_TO_ROSALIND_DIR> 
   CODON_PATH: <PATH_TO_ROSALIND_DIR> 
-  CODON_PYTHON: <PATH_TO/miniconda3/envs/codon_bio/lib/libpython3.13.so>
+  # CODON_PYTHON: <PATH_TO/miniconda3/envs/codon_bio/lib/libpython3.13.so>
 
