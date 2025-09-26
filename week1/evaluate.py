@@ -1,9 +1,11 @@
-from code.codon_src.file_tools import Fasta
+# from utilities.file_tools import Fasta
 import os
 import subprocess
 import zipfile
 import glob
 from datetime import datetime as dt
+from typing import List
+
 
 base_dir_path = os.path.dirname(__file__)
 week_data_dir = os.path.join(base_dir_path, 'data')
@@ -32,6 +34,17 @@ def create_contigs(data_dir:str):
     python_run(data_dir)
 
     pass
+
+def read_fasta(fasta_file:List[str]):
+    data = []
+    for line in fasta_file:
+        line = line.strip()
+        if line[0] != '>':
+            data.append(line)
+    # print(name, len(data), len(data[0]))
+    # print('Sample:', data[0])
+    return data
+
 
 def main():
     # Firstly compile the binary for codon to avoid having to use codon run
@@ -67,7 +80,7 @@ def main():
 
 def get_contig_lengths(data_dir_path):
     with open(os.path.join(base_dir_path,f'{data_dir_path}/contig.fasta')) as contig_file:
-        contigs = Fasta.get_fasta_as_list(contig_file.read())
+        contigs = read_fasta(contig_file.readlines())
         return list(map(len, contigs))
     
 def python_run(data_dir_path: str):

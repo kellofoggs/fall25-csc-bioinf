@@ -1,4 +1,4 @@
-from utilities.dna import DNAStringTools
+from utilities.nucleic_acids import DNAStringTools
 
 class DeBruijnNode[E]:
     # A Node that holds a k-mer and other fields useful for building a DeBruijn Graph
@@ -122,9 +122,9 @@ class DebruijnGraph:
         # This behavior is replicated here for consistency with the original implementation. 
         # Unfortunately for us that means that I will not be using a generator here as I need to look ahead one kmer, this would required me to either rewrite the generator function or write a wrapper for it
         # I have opted to consume the generator into a list instead
-        for curr_kmer in DNAStringTools.generate_kmers(read, k): # My original implementation that includes the last kmer, which is the correct behavior
+        # for curr_kmer in DNAStringTools.generate_kmers(read, k): # My original implementation that includes the last kmer, which is the correct behavior
 
-        # for curr_kmer in list(DNAStringTools.generate_kmers(read, k))[:-1]:
+        for curr_kmer in list(DNAStringTools.generate_kmers(read, k))[:-1]:
             if prev_kmer is None:
                 prev_kmer = curr_kmer
                 continue

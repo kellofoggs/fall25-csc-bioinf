@@ -18,14 +18,14 @@ import os
 
 abs_file_path = os.path.abspath(__file__)
 root_dir_path = os.path.dirname(abs_file_path)
-subdir_names = ["code", "data", "test"]
-file_names = ["ai.md"]
+subdir_names = ['code', 'data', 'test']
+file_names = ['ai.md']
 
-print(abs_file_path)
+
 
 def create_assignment_directory(week_name):
     
-   week_dir_name = os.path.join(root_dir_path, f"week{week_name}")
+   week_dir_name = os.path.join(root_dir_path, f'week{week_name}')
     
    os.makedirs(week_dir_name,exist_ok=True)
    for sub_dir in subdir_names:
@@ -35,10 +35,11 @@ def create_assignment_directory(week_name):
    for file_name in file_names:
       with open(os.path.join(week_dir_name, file_name), 'a'):
          pass
+   print(f'Created directory {week_dir_name} for week{week_name}')
 
 arguments_description = '''This 
 '''
 parser = argparse.ArgumentParser(description=arguments_description)
-parser.add_argument("week_name", nargs="?", help="The number/name of the week that the assignment is for")
+parser.add_argument('week_name', nargs='?', help='The number/name of the week that the assignment is for')
 args = parser.parse_args()
 create_assignment_directory(week_name=args.week_name)
