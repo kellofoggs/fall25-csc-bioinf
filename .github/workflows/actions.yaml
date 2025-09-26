@@ -3,7 +3,11 @@ on:
   push:
     # paths:
     #   -"week*/**"
+defaults:
+  run:
+    shell: bash -le {0}
 jobs:
+
   test:
     runs-on: ubuntu-latest
     steps:
