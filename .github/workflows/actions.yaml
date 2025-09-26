@@ -32,8 +32,8 @@ jobs:
       - name: Setup conda environment.yaml
         run: pip install ruamel.yaml && python .github/workflows//setup_env_yaml.py "environments/environment.yaml" "$GITHUB_WORKSPACE" && cat environments/environment.yaml
 
-      - name: Create conda environment
-        uses: conda-incubator/setup-miniconda@v3
+      # - name: Create conda environment
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: codon_bio
           environment-file: environments/environment.yaml
@@ -48,7 +48,7 @@ jobs:
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
 
       - name: Week 1
-        run: which python && echo $PYTHONPATH && echo $CODON_PATH && echo $CODON_PYTHON
+        run: conda activate codon_bio && which python && echo $PYTHONPATH && echo $CODON_PATH && echo $CODON_PYTHON
 
 
       # - name: Detect changed weeks
