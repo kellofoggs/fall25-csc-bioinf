@@ -32,7 +32,7 @@ def main():
 wp = main()
 print(type(wp))
 # cwp = str.__from_py__(wp)
-# cwp = str(wp)
+cwp = str(wp)
 print(cwp)
 print(type(cwp))
 

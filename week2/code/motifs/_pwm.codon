@@ -1,0 +1,102 @@
+"""
+Fast calculations involving position-weight matrices (PWM).
+
+This is a pure Python reimplementation of the Biopython C-extension `_pwm`.
+It calculates PWM scores for a DNA sequence and writes them into a provided
+NumPy array.
+
+Original C code © 2009–2020 Michiel de Hoon (Biopython project).
+
+This was adapted by Chat GPT-5
+"""
+
+import numpy as np
+
+
+def _calculate(sequence: str, matrix: np.ndarray, scores: np.ndarray) -> None:
+    """Core PWM calculation (faithful to the original C implementation)."""
+    m = matrix.shape[0]          # motif length
+    n = scores.shape[0]          # number of windows
+    seq = sequence               # keep case for mixed input
+    nan = np.nan
+
+    for i in range(n):
+        score = 0.0
+        ok = True
+        for j in range(m):
+            c = seq[i + j]
+            if c in ("A", "a"):
+                score += matrix[j, 0]
+            elif c in ("C", "c"):
+                score += matrix[j, 1]
+            elif c in ("G", "g"):
+                score += matrix[j, 2]
+            elif c in ("T", "t"):
+                score += matrix[j, 3]
+            else:
+                ok = False
+                break
+        scores[i] = float(score) if ok else nan
+
+
+def calculate(sequence: str, matrix: np.ndarray, scores: np.ndarray) -> None:
+    """
+    calculate(sequence, pwm, scores)
+
+    Calculate position-weight matrix (PWM) scores for all positions
+    along the sequence for the given PWM, and store them in the
+    provided NumPy array `scores`.
+
+    Parameters
+    ----------
+    sequence : str
+        DNA sequence (characters A, C, G, T; case-insensitive).
+    matrix : np.ndarray
+        PWM as a 2D numpy array of shape (m, 4) with dtype=float.
+        Columns correspond to A, C, G, T.
+    scores : np.ndarray
+        1D numpy array of dtype=float32 with length len(sequence) - m + 1.
+        Results will be written in-place.
+    """
+    # --- Argument validation (similar to matrix_converter / scores_converter) ---
+    if not isinstance(matrix, np.ndarray):
+        raise RuntimeError("position-weight matrix is not an array")
+    if matrix.ndim != 2:
+        raise RuntimeError(
+            f"position-weight matrix has incorrect rank ({matrix.ndim}, expected 2)"
+        )
+    if matrix.shape[1] != 4:
+        raise RuntimeError(
+            f"position-weight matrix should have four columns "
+            f"({matrix.shape[1]} columns found)"
+        )
+    if matrix.dtype not in (np.float64, np.float32):
+        raise RuntimeError(
+            f"position-weight matrix data format incorrect "
+            f"('{matrix.dtype}', expected float64 or float32)"
+        )
+
+    if not isinstance(scores, np.ndarray):
+        raise RuntimeError("scores array is not an array")
+    if scores.ndim != 1:
+        raise ValueError(
+            f"scores array has incorrect rank ({scores.ndim}, expected 1)"
+        )
+    if scores.dtype != np.float32:
+        raise RuntimeError(
+            f"scores array has incorrect data format "
+            f"('{scores.dtype}', expected float32)"
+        )
+
+    # --- Consistency check ---
+    m = matrix.shape[0]
+    s = len(sequence)
+    n = scores.shape[0]
+    if n != s - m + 1:
+        raise RuntimeError(
+            f"size of scores array is inconsistent "
+            f"(sequence length is {s}, motif length is {m}, scores length is {n})"
+        )
+
+    # --- Actual calculation ---
+    _calculate(sequence, matrix, scores)
