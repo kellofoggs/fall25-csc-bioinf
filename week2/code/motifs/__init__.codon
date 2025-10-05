@@ -23,7 +23,7 @@ and MAST programs, as well as files in the TRANSFAC format.
 
 # Codon doesn't have urllib, I'm using the BioPython modules that I don't have time to rewrite in codon with the python interpreter
 
-from python import urllib.parse  as urllib_parse# type: ignore
+from python import urllib.parse  as urllib_parse # type: ignore
 from python import urllib.request as urllib_request # type: ignore
 urlencode = urllib_parse.urlencode
 urlopen = urllib_request.urlopen
@@ -47,7 +47,6 @@ def create(instances:list[pyobj] | pyobj, alphabet:str ="ACGT"): # Alphabet by d
     alphabet:  
     '''
     alignment = Alignment(instances)
-    # print(alignment)
     return Motif(alignment=alignment, alphabet=alphabet)
 
 def parse(handle, fmt, strict=True):
@@ -99,44 +98,45 @@ def parse(handle, fmt, strict=True):
     file contents does not strictly comply with the specified file format.
     """
     fmt = fmt.lower()
-    if fmt == "alignace":
-        from python import Bio.motifs.alignance as alignace # type: ignore
-
-        return alignace.read(handle)
-    elif fmt == "meme":
-        from python import Bio.motifs.meme as meme # type: ignore
-
-        return meme.read(handle)
-    elif fmt == "minimal":
+    if fmt == "minimal":
         # from python import Bio.motifs.minminal as minimal # type: ignore
-        from week2.code.motifs import minimal
+        import week2.code.motifs.minimal as minimal
         return minimal.read(handle)
-    elif fmt == "clusterbuster":
-        from python import Bio.motifs.clusterbuster as clusterbuster # type: ignore
 
-        return clusterbuster.read(handle)
-    elif fmt in ("pfm-four-columns", "pfm-four-rows"):
-        from python import Bio.motifs.pfm as pfm # type: ignore
+    # elif fmt == "alignace":
+    #     from python import Bio.motifs.alignance as alignace # type: ignore
 
-        return pfm.read(handle, fmt)
-    elif fmt == "xms":
-        from python import Bio.motifs.xms as xms # type: ignore
+    #     return alignace.read(handle)
+    # elif fmt == "meme":
+    #     from python import Bio.motifs.meme as meme # type: ignore
 
-        return xms.read(handle)
-    elif fmt == "mast":
-        from python import Bio.motifs.mast as mast # type: ignore
+    #     return meme.read(handle)
+    # elif fmt == "clusterbuster":
+    #     from python import Bio.motifs.clusterbuster as clusterbuster # type: ignore
 
-        return mast.read(handle)
-    elif fmt == "transfac":
-        from python import Bio.motifs.transfac as transfac # type: ignore
+    #     return clusterbuster.read(handle)
+    # elif fmt in ("pfm-four-columns", "pfm-four-rows"):
+    #     from python import Bio.motifs.pfm as pfm # type: ignore
 
-        return transfac.read(handle, strict)
-    elif fmt in ("pfm", "sites", "jaspar"):
-        from python import Bio.motifs.jaspar as jaspar # type: ignore
+    #     return pfm.read(handle, fmt)
+    # elif fmt == "xms":
+    #     from python import Bio.motifs.xms as xms # type: ignore
 
-        return jaspar.read(handle, fmt)
+    #     return xms.read(handle)
+    # elif fmt == "mast":
+    #     from python import Bio.motifs.mast as mast # type: ignore
+
+    #     return mast.read(handle)
+    # elif fmt == "transfac":
+    #     from python import Bio.motifs.transfac as transfac # type: ignore
+
+    #     return transfac.read(handle, strict)
+    # elif fmt in ("pfm", "sites", "jaspar"):
+    #     from python import Bio.motifs.jaspar as jaspar # type: ignore
+
+    #     return jaspar.read(handle, fmt)
     else:
-        raise ValueError("Unknown format %s" % fmt)
+        raise ValueError(f"Unknown format {fmt}" )
 
 
 def read(handle, fmt, strict=True):
@@ -197,15 +197,23 @@ def read(handle, fmt, strict=True):
     return motif
 
 class Motif:
-    __mask: list[int]
     name: str
     counts: FrequencyPositionMatrix
-    nucleotide_post_freqs: FrequencyPositionMatrix
+    # nucleotide_pos_freqs: FrequencyPositionMatrix
     length: int
-    alignment: pyobj
+    alignment: pyobj # type: ignore
     alphabet: str
-    _background: dict[str, float|int]
-    _pseudocounts: dict[str, float|int]
+    # _background: dict[str, float|int]
+    # _pseudocounts: dict[str, float|int]
+    _background: dict[str, float]
+    _pseudocounts: dict[str, float]
+    _mask: list[float]
+
+    num_occurrences: int
+    evalue: float
+
+
+
 
     def __init__(self, alphabet="ACGT", alignment =None, counts=None): # type: ignore
         '''
@@ -213,17 +221,17 @@ class Motif:
         Alphabet: A  case sensitive string of symbols that are recognized within the motif matrix
         Alignment: 
         '''
-        # from week2.code.motifs import matrix
         self.name = ""
+        self.num_occurrences = -1
+        self.evalue = -1
         
         if counts is not None and alignment is not None: # Both specified
             raise Exception(
                 ValueError, "Specify either counts or an alignment, don't specify both"
             )
         elif  counts is not None: # Only counts are specified by user
-            # self.alignment = None
-            self.nucleotide_pos_freqs= FrequencyPositionMatrix(alphabet, counts)
-            self.length = self.nucleotide_pos_freqs.length
+            self.counts= FrequencyPositionMatrix(alphabet, counts)
+            self.length = self.counts.length
             pass
         elif alignment is not None: # Only alignment is specified by user, use frequencies to buld the motifs
             length = int(alignment.length) # Cast alignment.length (pyobj) to a codon int
@@ -234,7 +242,6 @@ class Motif:
                     codon_arr.append(float(entry))
 
                 return np.array(codon_arr)
-
             frequencies= {str(k): convert_py_np_arr_to_codon_np_arr(v) for k, v in alignment.frequencies.items()}
             for symbol in alphabet:
                 if symbol not in frequencies:
@@ -246,10 +253,11 @@ class Motif:
             self.alignment = None
             self.length = None
             self.counts = None
+            
         self.alphabet = alphabet
-        # self.pseudocounts = None These are implicitly None types, no need to set them to None here.
-        # self.background = None
-        # self.mask = None
+        self.pseudocounts = None # These are implicitly None types, no need to set them to None here.
+        self.background = None
+        self.mask = None
 
             
     pass
@@ -263,68 +271,75 @@ class Motif:
 
     @property
     def mask(self):
-        return self.__mask
+        return self._mask
 
     @mask.setter
-    def mask(self, mask):
+    def mask(self, mask:Optional):
         if self.length is None:
-            self.__mask = ()
+            self._mask = ()
         elif mask is None:
-            self.__mask = (1,) * self.length
+            self._mask = [1.0] * self.length
+
         elif len(mask) != self.length:
             raise ValueError(
-                "The length (%d) of the mask is inconsistent with the length (%d) of the motif"
-                % (len(mask), self.length),
+                f"The length ({len(mask)}) of the mask is inconsistent with the length ({self.length}) of the motif"
             )
         elif isinstance(mask, str):
-            self.__mask = []
+            self._mask = []
             for char in mask:
                 if char == "*":
-                    self.__mask.append(1)
+                    self._mask.append(1)
                 elif char == " ":
-                    self.__mask.append(0)
+                    self._mask.append(0)
                 else:
                     raise ValueError(
-                        "Mask should contain only '*' or ' ' and not a '%s'" % char
+                        f"Mask should contain only '*' or ' ' and not a '{char}'" 
                     )
-            self.__mask = tuple(self.__mask)
         else:
-            self.__mask = tuple(int(bool(c)) for c in mask)
+            self._mask = list(int(bool(c)) for c in mask)
 
     @property
     def pseudocounts(self):
         return self._pseudocounts
 
     @pseudocounts.setter
-    def pseudocounts(self, value: dict= None):
+    def pseudocounts(self, value:Optional[float]):
         self._pseudocounts = {}
         if isinstance(value, dict):
             self._pseudocounts = {letter: value[letter] for letter in self.alphabet}
+            pass
         else:
             if value is None:
                 value = 0.0
-            self._pseudocounts = dict.fromkeys(self.alphabet, value)
+            self._pseudocounts = dict.fromkeys(self.alphabet, float(value))
+
+ 
+
     @property
     def background(self):
         return self._background
 
     @background.setter
-    def background(self, value):#:dict = None):
-        if isinstance(value, dict):
-            self._background = {letter: value[letter] for letter in self.alphabet}
-        elif value is None:
+    def background(self, value:Optional):#:dict = None):
+        if value is None:
             self._background = dict.fromkeys(self.alphabet, 1.0)
+
+        elif isinstance(value, dict) or isinstance(value, Optional[dict[str,float]]):
+            
+            self._background = {letter: value[letter] for letter in self.alphabet}
+            
         else:
             if not self._has_dna_alphabet() and not self._has_rna_alphabet():
                 raise ValueError(
                     "Setting the background to a single value only works for DNA and RNA"
                     "motifs (in which case the value is interpreted as the GC content)"
                 )
-            T_or_U = "T" if self._has_dna_alphabet() else "U"
-            self._background["A"] = (1.0 - value) / 2.0
-            self._background["C"] = value / 2.0
-            self._background["G"] = value / 2.0
-            self._background[T_or_U] = (1.0 - value) / 2.0
+            if isinstance(value, float) or isinstance(value, int):
+                T_or_U = "T" if self._has_dna_alphabet() else "U"
+                self._background["A"] = (1.0 - value) / 2.0
+                self._background["C"] = value / 2.0
+                self._background["G"] = value / 2.0
+                self._background[T_or_U] = (1.0 - value) / 2.0
         total = sum(self._background.values())
         for letter in self.alphabet:
             self._background[letter] /= total
@@ -332,7 +347,7 @@ class Motif:
     @property
     def pwm(self):
         """Calculate and return the position weight matrix for this motif."""
-        return self.counts.normalize(self._pseudocounts)
+        return self.counts.normalize(self.pseudocounts)
 
     @property
     def pssm(self):
@@ -422,7 +437,7 @@ class Motif:
                 T_or_U: self.counts["A"][::-1],
             }
             res = Motif(alphabet=alphabet, counts=counts)
-        res.__mask = self.__mask[::-1]
+        res._mask = self._mask[::-1]
         res.background = {
             "A": self.background[T_or_U],
             "C": self.background["G"],
@@ -493,7 +508,7 @@ class Motif:
         else:
             alpha = "auto"
 
-        frequencies = format(self, "transfac")
+        frequencies = self.format("transfac")
         url = "https://weblogo.threeplusone.com/create.cgi"
         values = {
             "sequences": frequencies,
@@ -545,8 +560,10 @@ class Motif:
     # Python/Codon base object methods that can be overridden for things like to_string, length/size of object
     def __str__(self, masked=False):
         """Return string representation of a motif."""
+
         text = ""
         if self.alignment is not None:
+
             text += "\n".join(list(map(str,self.alignment))) # Cast the python object to a list of strings 
 
         if masked:
@@ -568,6 +585,38 @@ class Motif:
             return 0
         else:
             return self.length
+    
+    # This is bad practice, the other object should be able to be any other object.
+    # The issue is I'm having trouble when specifying that the object 
+    def __eq__(self, other_object):
+        if  isinstance(other_object, Motif):
+    # Compare simple attributes
+            if (
+                self.name != other_object.name or
+                self.length != other_object.length or
+                self.alphabet != other_object.alphabet or
+                self.num_occurrences != other_object.num_occurrences 
+            ):
+                return False
+            
+            # Ideally this should check that the alignments are the same however, unfortunately because parse tests
+            # Expect the alignment to be not set I have to forego this
+            # Also reverse_complement won't work without porting over alignment as you have to set the sequences field of the Alignment object
+            if (
+                self.consensus != other_object.consensus or
+                self.anticonsensus != other_object.anticonsensus 
+                # or self.reverse_complement() != other_object.reverse_complement()
+            ):
+                    return False
+
+            return True
+        else:
+            return False
+        pass
+    def __ne__(self, other_object):
+        return not self.__eq__(other_object)
+        pass
+
 
     def format(self, format_spec):
         """Return a string representation of the Motif in the given format.
@@ -611,7 +660,7 @@ class Motif:
             # Follow python convention and default to using __str__
             return str(self)
         else:
-            raise ValueError("Unknown format type %s" % format_spec)
+            raise ValueError(f"Unknown format type {format_spec}" )
 
 
 def write(motifs, fmt, **kwargs):
@@ -638,9 +687,9 @@ def write(motifs, fmt, **kwargs):
 
         return clusterbuster.write(motifs, **kwargs)
     else:
-        raise ValueError("Unknown format type %s" % fmt)
+        raise ValueError(f"Unknown format type {fmt}")
+
+
+
 
 # Lol we are not running doctests with all the changes I've made to function comments
-my_array = [BioSeq.Seq("ATATA"), BioSeq.Seq("ATCTA")]
-my_motifs = create(my_array,alphabet="ACGT")
-print(my_motifs)

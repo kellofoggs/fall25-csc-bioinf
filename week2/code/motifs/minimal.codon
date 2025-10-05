@@ -46,7 +46,6 @@ def read(handle):
     _read_version(record, handle)
     _read_alphabet(record, handle)
     _read_background(record, handle)
-
     while True:
         for line in handle:
             if line.startswith("MOTIF"):
@@ -66,29 +65,47 @@ def read(handle):
         motif.name = name
         record.append(motif)
         assert len(record) == motif_number
+
     return record
 
 
-class Record(list):
+class Record:
     """Class for holding the results of a minimal MEME run."""
-
+    alphabet: str
+    version: str
+    datafile: str
+    command: str
+    background: dict[str, float]
+    sequences: list[str]
+    motif_list: list[Motif]
     def __init__(self):
         """Initialize record class values."""
         self.version = ""
         self.datafile = ""
         self.command = ""
-        self.alphabet = None
+        self.alphabet = ""
         self.background = {}
         self.sequences = []
+        self.motif_list = []
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> Motif:
         """Return the motif of index key."""
         if isinstance(key, str):
-            for motif in self:
+            for i in range(0, len(self.motif_list)):
+                motif = self.motif_list[i]
                 if motif.name == key:
                     return motif
         else:
-            return list.__getitem__(self, key)
+            return self.motif_list[key]
+        
+    def __len__(self):
+        return len(self.motif_list)
+    
+    def append(self, item):
+        self.motif_list.append(item)
+
+    def __str__(self):
+        return f"version: {self.version}\ndatafile: {self.datafile}\nbackground: {self.background}"        
 
 
 # Everything below is private
@@ -147,7 +164,7 @@ def _read_alphabet(record, handle):
             "Unexpected end of stream: Expected to find line starting with 'ALPHABET'"
         )
     if not line.startswith("ALPHABET= "):
-        raise ValueError("Line does not start with 'ALPHABET':\n%s" % line)
+        raise ValueError(f"Line does not start with 'ALPHABET':\n{line}")
     line = line.strip().replace("ALPHABET= ", "")
     if line == "ACGT":
         al = "ACGT"

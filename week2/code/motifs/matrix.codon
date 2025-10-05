@@ -27,7 +27,7 @@ class GenericPositionMatrix: # It looks like having GenericPositionMatrix inheri
     '''
     length: int
     alphabet: str
-    _internal_attrs:dict[str, list[float]]
+    _internal_attrs:dict[str, list[float] ]
     def __init__(self, alphabet:str, values):
         self._internal_attrs = dict()
     # def __init__(self, alphabet:str, values:dict[str, list[float]]):
@@ -129,8 +129,9 @@ class GenericPositionMatrix: # It looks like having GenericPositionMatrix inheri
             def get(nucleotide):
                 return self.internal_attrs[nucleotide][i]  # noqa: B023
 '''
-            nucleotides = sorted(self, key=lambda nucleotide: self[nucleotide][i], reverse=True)
+            nucleotides = sorted(self._internal_attrs, key=lambda nucleotide: self[nucleotide][i], reverse=True)
             counts = [self._internal_attrs[c][i] for c in nucleotides]
+
             # Follow the Cavener rules:
             if counts[0] > sum(counts[1:]) and counts[0] > 2 * counts[1]:
                 key = nucleotides[0]
@@ -143,7 +144,10 @@ class GenericPositionMatrix: # It looks like having GenericPositionMatrix inheri
             nucleotide = degenerate_nucleotide.get(key, key)
             sequence += nucleotide
         return Seq(sequence)
-
+    
+    def items(self):
+        return self._internal_attrs.items()
+    # def 
     def calculate_consensus(
         self, substitution_matrix=None, plurality=None, identity=0, setcase=None
     ):
@@ -249,19 +253,19 @@ class GenericPositionMatrix: # It looks like having GenericPositionMatrix inheri
 
     def __str__(self)-> str:
         """Return a string containing nucleotides and counts of the alphabet in the Matrix."""
-        words:list[str] = ["%6d" % i for i in range(self.length)]
+        words = [f"{i:6d}"  for i in range(self.length)]
         line:str = "   " + " ".join(words)
         lines:list[str] = [line]
         for letter in self.alphabet:
-            words = ["%6.2f" % value for value in self._internal_attrs[letter]]
-            line = "%c: " % letter + " ".join(words)
+            words = [f"{value:6.2f}"  for value in self[letter]]
+            line = f"{letter}: " + " ".join(words)
             lines.append(line)
         text = "\n".join(lines) + "\n"
         return text
     
-    def __getitem__(self, key) -> list:
+    def __getitem__(self, key) :#-> list:
         """Return the position matrix of index key."""
-        if isinstance(key, tuple):
+        if isinstance(key, list):
             if len(key) == 2:
                 key1, key2 = key
                 if isinstance(key1, slice):
@@ -272,7 +276,7 @@ class GenericPositionMatrix: # It looks like having GenericPositionMatrix inheri
                 elif isinstance(key1, int): # TODO: numbers.Integral allows for types like bool and custom integer types to be included
                     letter1 = self.alphabet[key1]
                     dim1 = 1
-                elif isinstance(key1, tuple):
+                elif isinstance(key1, list):
                     letters1 = [self.alphabet[i] for i in key1]
                     dim1 = 2
                 elif isinstance(key1, str):
@@ -296,7 +300,7 @@ class GenericPositionMatrix: # It looks like having GenericPositionMatrix inheri
                     return dict.__getitem__(self._internal_attrs, letter1)[index2]
                 elif dim1 == 1 and dim2 == 2:
                     values = dict.__getitem__(self._internal_attrs, letter1)
-                    return tuple(values[index2] for index2 in indices2)
+                    return list(values[index2] for index2 in indices2)
                 elif dim1 == 2 and dim2 == 1:
                     d = {}
                     for letter1 in letters1:
@@ -323,7 +327,7 @@ class GenericPositionMatrix: # It looks like having GenericPositionMatrix inheri
         elif isinstance(key, int): # TODO: numbers.Integral allows for types like bool and custom integer types to be included
             letter = self.alphabet[key]
             dim = 1
-        elif isinstance(key, tuple):
+        elif isinstance(key, list):
             letters = [self.alphabet[i] for i in key]
             dim = 2
         elif isinstance(key, str):
@@ -336,13 +340,13 @@ class GenericPositionMatrix: # It looks like having GenericPositionMatrix inheri
             raise KeyError("Cannot understand key %s" % key)
         if dim == 1:
             return dict.__getitem__(self._internal_attrs, letter)
-        elif dim == 2:
-            d = {}
-            for letter in letters:
-                d[letter] = dict.__getitem__(self._internal_attrs, letter)
-            return d
+        # elif dim == 2:
+        #     d:dict[str, list[float]] = dict()
+        #     for letter in self.alphabet:
+        #         d[letter] = self._internal_attrs[letter]
+        #     return d
         else:
-            raise RuntimeError("Should not get here")
+            raise RuntimeError(f"Should not get here. Matrix dimension must be either 1 or 2. It's currently {dim}")
 
     def __setitem__(self, key, value):
         self._internal_attrs[key] = value
@@ -350,12 +354,12 @@ class GenericPositionMatrix: # It looks like having GenericPositionMatrix inheri
 
 
 
-    # def resolve_background(self, background: Optional[dict[str, float]]): # type: ignore
-    #     if background is None:
-    #         background = dict.fromkeys(self.alphabet, 1.0)
-    #     else: 
-    #         background = dict(background)
-    #     return background
+    def resolve_background(self, background: Optional[dict[str, float]]): # type: ignore
+        if background is None:
+            background = dict.fromkeys(self.alphabet, 1.0)
+        else: 
+            background = dict(background)
+        return background
 
 
     pass
@@ -381,7 +385,7 @@ class FrequencyPositionMatrix(GenericPositionMatrix):
         Alternatively, the pseudocounts can be a dictionary with a key
         for each letter in the alphabet associated with the motif.
         """
-        counts = {}
+        counts:dict[str,list[float]] = {}
         if pseudocounts is None:
             for letter in self.alphabet:
                 counts[letter] = [0.0] * self.length
@@ -393,9 +397,13 @@ class FrequencyPositionMatrix(GenericPositionMatrix):
                 counts[letter] = [float(pseudocounts)] * self.length
         for i in range(self.length):
             for letter in self.alphabet:
+
+                c = self[letter]
+                # print(c)
                 counts[letter][i] += self[letter][i]
         # Actual normalization is done in the PositionWeightMatrix initializer
         return PositionWeightMatrix(self.alphabet, counts)
+        # return self
 
 class PositionWeightMatrix(GenericPositionMatrix):
     """Class for the support of weight calculations on the Position Matrix."""
@@ -407,8 +415,8 @@ class PositionWeightMatrix(GenericPositionMatrix):
             total = sum(self[letter][i] for letter in alphabet)
             for letter in alphabet:
                 self[letter][i] /= total
-        for letter in alphabet:
-            self[letter] = tuple(self[letter])
+        # for letter in alphabet:
+            # self[letter] = self[letter])
 
     def log_odds(self, background=None):
         """Return the Position-Specific Scoring Matrix.
@@ -420,10 +428,7 @@ class PositionWeightMatrix(GenericPositionMatrix):
         """
         values = {}
         alphabet = self.alphabet
-        if background is None:
-            background = dict.fromkeys(self.alphabet, 1.0)
-        else:
-            background = dict(background)
+        background = self.resolve_background(background)
         total = sum(background.values())
         for letter in alphabet:
             background[letter] /= total
@@ -449,7 +454,9 @@ class PositionWeightMatrix(GenericPositionMatrix):
 
 class PositionSpecificScoringMatrix(GenericPositionMatrix):
     """Class for the support of Position Specific Scoring Matrix calculations."""
-
+    def __init__(self, alphabet, values):
+        super().__init__(alphabet, values)
+        
     def calculate(self, sequence):
         """Return the PWM score for a given sequence for all positions.
 
@@ -567,10 +574,8 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
 
     def mean(self, background=None):
         """Return expected value of the score of a motif."""
-        if background is None:
-            background = dict.fromkeys(self.alphabet, 1.0)
-        else:
-            background = dict(background)
+
+        background = self.resolve_background(background)
         total = sum(background.values())
         for letter in self.alphabet:
             background[letter] /= total
@@ -589,10 +594,7 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
 
     def std(self, background=None):
         """Return standard deviation of the score of a motif."""
-        if background is None:
-            background = dict.fromkeys(self.alphabet, 1.0)
-        else:
-            background = dict(background)
+        background = self.resolve_background(background)
         total = sum(background.values())
         for letter in self.alphabet:
             background[letter] /= total
@@ -664,10 +666,7 @@ class PositionSpecificScoringMatrix(GenericPositionMatrix):
         """Calculate the distribution of the scores at the given precision."""
         from week2.code.motifs.thresholds import ScoreDistribution
 
-        if background is None:
-            background = dict.fromkeys(self.alphabet, 1.0)
-        else:
-            background = dict(background)
+        background = self.resolve_background(background)
         total = sum(background.values())
         for letter in self.alphabet:
             background[letter] /= total
