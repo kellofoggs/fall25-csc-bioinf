@@ -2,11 +2,14 @@ name: codon_bio
 channels:
   - defaults
 dependencies:
-  - python=3.13
+  - python=3.10
   - biopython
+  - numpy
   - pip
+
 variables:
   PYTHONPATH: <PATH_TO_ROSALIND_DIR> 
-  CODON_PATH: <PATH_TO_ROSALIND_DIR> 
+  CODON_PATH: <PATH_TO_ROSALIND_DIR>
   # CODON_PYTHON: <PATH_TO/miniconda3/envs/codon_bio/lib/libpython3.13.so>
 
+# CODON_PYTHON=/usr/lib/x86_64-linux-gnu/libpython3.8.so.1.0

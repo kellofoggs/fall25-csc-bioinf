@@ -1,0 +1,26 @@
+name: codon_bio
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - biopython
+  - pip
+variables:
+  PYTHONPATH: /home/kelloggs/fall25-csc-bioinf/ 
+  CODON_PATH: /home/kelloggs/fall25-csc-bioinf/
+  # CODON_PYTHON: <PATH_TO/miniconda3/envs/codon_bio/lib/libpython3.13.so>
+  # CODON_PYTHON: /home/kelloggs/miniconda3/envs/codon_bio/lib/libpython3.13.so.1.0
+  CODON_PYTHON: /home/kelloggs/miniconda3/envs/codon_bio/lib/libpython3.10.so.1.0
+
+# name: codon_bio
+# channels:
+#   - defaults
+# dependencies:
+#   - python=3.13
+#   - biopython
+#   - pip
+# variables:
+#   PYTHONPATH: /home/kelloggs/fall25-csc-bioinf/ 
+#   CODON_PATH: /home/kelloggs/fall25-csc-bioinf/
+#   # CODON_PYTHON: <PATH_TO/miniconda3/envs/codon_bio/lib/libpython3.13.so>
+#   CODON_PYTHON: /home/kelloggs/miniconda3/envs/codon_bio/lib/libpython3.13.so.1.0
