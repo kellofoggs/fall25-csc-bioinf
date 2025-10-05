@@ -39,7 +39,7 @@ jobs:
 
       - name: Set up Codon Python bridge
         run: |
-          echo "CODON_PYTHON=~/miniconda3/envs/codon_bio/lib/libpython3.10.so.1.0" >> $GITHUB_ENV
+          echo "CODON_PYTHON=/usr/share/miniconda3/envs/codon_bio/lib/libpython3.10.so.1.0" >> $GITHUB_ENV
 
       # - name: Create conda environment
       - uses: conda-incubator/setup-miniconda@v3
