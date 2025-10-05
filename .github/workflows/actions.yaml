@@ -51,7 +51,7 @@ jobs:
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
 
       - name: Week 1
-        run: cat week1/report.md >> $GITHUB_STEP_SUMMARY
+        run: cat week2/report.md >> $GITHUB_STEP_SUMMARY
         # run: conda activate codon_bio && which python && echo $PYTHONPATH && echo $CODON_PATH && echo $CODON_PYTHON && python week1/evaluate.py
 
 
