@@ -25,8 +25,8 @@ jobs:
           export CODON_PYTHON=$(find_libpython)
           echo "Found Python at: ${CODON_PYTHON}"
           echo "CODON_PYTHON=${CODON_PYTHON}" >> $GITHUB_ENV
-          echo "CODON_PATH={$GITHUB_WORKSPACE}" >> $GITHUB_ENV
-          echo "PYTHON_PATH={$GITHUB_WORKSPACE}" >> $GITHUB_ENV
+          echo "CODON_PATH=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
+          echo "PYTHON_PATH=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
           pip install matplotlib  # Dependencies for week1
           pip install numpy
           pip install biopython
