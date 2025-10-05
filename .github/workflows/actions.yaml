@@ -1,88 +1,36 @@
 name: Github CI
-on: 
-  push:
-    # paths:
-    #   -"week*/**"
-defaults:
-  run:
-    shell: bash -le {0}
+on: [push]
 jobs:
-
   test:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-
       - name: Install Codon
         run: |
           mkdir -p ${HOME}/.codon
           curl -L https://github.com/exaloop/codon/releases/download/v0.19.3/codon-linux-x86_64.tar.gz | tar zxvf - --strip-components=1 -C ${HOME}/.codon
           curl -L https://github.com/exaloop/seq/releases/download/v0.11.5/seq-linux-x86_64.tar.gz | tar zxvf - -C ${HOME}/.codon/lib/codon/plugins
-          echo "${HOME}/.codon/bin" >> $GITHUB_PATH
-
+          export PATH=${PATH}:${HOME}/.codon/bin
+          echo "PATH=${PATH}" >> $GITHUB_ENV
       - name: Check out repository code
         uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
-          fetch-depth: 0   # ensure full history so git diff works
-
-      - name: Setup G;pba; Python Interpreter
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.13' 
-
-
-      - name: Setup conda environment.yaml
-        run: pip install ruamel.yaml && python .github/workflows//setup_env_yaml.py "environments/environment.yaml" "$GITHUB_WORKSPACE" && cat environments/environment.yaml
-
-
+          python-version: '3.10'
       - name: Set up Codon Python bridge
         run: |
-          echo "CODON_PYTHON=/usr/share/miniconda3/envs/codon_bio/lib/libpython3.10.so.1.0" >> $GITHUB_ENV
-
-      # - name: Create conda environment
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          activate-environment: codon_bio
-          environment-file: environments/environment.yaml
-          auto-activate-base: false
-
+          pip install find_libpython
+          export CODON_PYTHON=$(find_libpython)
+          echo "Found Python at: ${CODON_PYTHON}"
+          echo "CODON_PYTHON=${CODON_PYTHON}" >> $GITHUB_ENV
+          echo "CODON_PATH={%GITHUB_WORKSPACE}" >> $GITHUB_ENV
+          echo "PYTHON_PATH={$GITHUB_WORKSPACE}" >> $GITHUB_ENV
+          pip install matplotlib  # Dependencies for week1
+          pip install numpy
+          pip install biopython
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - run: which python
       - name: Week 1
-
-        run: python week2/evaluate.py && cat week2/report.md >> $GITHUB_STEP_SUMMARY
-        # run: conda activate codon_bio && which python && echo $PYTHONPATH && echo $CODON_PATH && echo $CODON_PYTHON && python week1/evaluate.py
-
-
-      # - name: Detect changed weeks
-      #   id: detect
-      #   run: |
-      #     # Handle first commit (before = 0000...)
-      #     if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-      #       weeks=$(git diff --name-only $(git hash-object -t tree /dev/null) ${{ github.sha }} \
-      #               | grep '^week[0-9]\+/' \
-      #               | cut -d/ -f1 | sort -u)
-      #     else
-      #       weeks=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
-      #               | grep '^week[0-9]\+/' \
-      #               | cut -d/ -f1 | sort -u)
-      #     fi
-
-      #     echo "weeks=$weeks" >> $GITHUB_OUTPUT
-
-      #     # Set run name dynamically
-      #     if [ -n "$weeks" ]; then
-      #       echo "GITHUB_RUN_NAME=Evaluating $weeks" >> $GITHUB_ENV
-      #     else
-      #       echo "GITHUB_RUN_NAME=Evaluating (no week changes)" >> $GITHUB_ENV
-      #     fi
-
-      # - name: Run evaluations
-      #   run: |
-      #     for w in ${{ steps.detect.outputs.weeks }}; do
-      #       echo "Running evaluation for $w..."
-      #       python $w/evaluate.py
-      #     done
+        run: bash week2/evaluate.py
