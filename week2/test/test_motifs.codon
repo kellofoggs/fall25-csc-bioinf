@@ -260,7 +260,6 @@ class KellyTests:
 
         KellyTests.assertEqual(motif.num_occurrences, 17)
         KellyTests.assertEqual(motif.length, 19)
-        print(motif.background["A"])
         KellyTests.assertAlmostEqual(motif.background["A"], 0.30269730269730266)
         KellyTests.assertAlmostEqual(motif.background["C"], 0.1828171828171828)
         KellyTests.assertAlmostEqual(motif.background["G"], 0.20879120879120877)
