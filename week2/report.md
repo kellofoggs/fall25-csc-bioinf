@@ -1,0 +1,8 @@
+This week I ported (or attempted to ) a module from biopython to the codon language.
+This module was the motifs module specifically with the minimal MEME format.
+
+I wrote some tests to check if the codon implementation was working correctly. The tests were adapted from the biopython test suite for motifs but no unittest was available so the default codon test suite was used instead. It's worth nothing that codon does have some portions of unittest working but I could not get these to reliably work so I used the default codon test suite.
+
+Chat gpt was not able to properly show me how to convert a python class to a codon class using the _from_py method. I had to look at the codon documentation and examples to figure this out (this was not succesful). Overall I spent mabye 27 hours on this assignment, a good chunk of which was debugging a child class error, but I was able to fix this and helped someone else with this on Piazza. I also found a good chunk of strange bugs (for instance I could cast a list to a tuple within a class, but was able to outside of a class). I also found codon's support of the "Optional" type to be very unintuitive. An example of this is the hotfix I did on line 327 of __init__.codon in week2/code/motifs. I had to do a check for None and then check if the variable passed in was a dict of a very specific type. I also checked if this dict was an untyped dict. 
+
+The speed advantages of Codon aren't really relevant in this case as the test cases in python all completed in under a second. I did not perform benchmarking as I don't think it would be relevant here. It would be interesting to see how a motif is calculated for a very large sequence.
