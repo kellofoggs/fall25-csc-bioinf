@@ -1,0 +1,41 @@
+# This source code is part of the Biotite package and is distributed
+# under the 3-Clause BSD License. Please see 'LICENSE.rst' for further
+# information.
+
+"""
+This subpackage provides functions and data structures for creating
+(phylogenetic) trees.
+
+The :class:`Tree` is the central class in this subpackage.
+It wraps a *root* :class:`Node` object.
+A :class:`Node` is either an intermediate node, if it has child
+:class:`Node` objects, or otherwise a leaf node.
+
+A :class:`Tree` is not a container itself:
+Objects, e.g species names or sequences, that are represented by the
+nodes, cannot be stored directly in a :class:`Tree` or
+:class:`Node`.
+Instead, each leaf node has a reference index:
+These indices refer to a separate list or array, containing the actual
+reference objects.
+
+A :class:`Tree` can be created from or exported to a *Newick* notation,
+usingthe :func:`Tree.from_newick()` or :func:`Tree.to_newick()` method,
+respectively. Newick is a format for serializing using parentheses, commas, semicolons and (optionally) node names 
+
+A :class:`Tree` can be build from a pairwise distance matrix using the
+popular *UPGMA* (:func:`upgma()`) and *Neighbor-Joining*
+(:func:`neighbor_joining()`) algorithms.
+
+This package was originally written in the Python programming language using Cython by Patrick Kunzmann, and was later adapted by Kelly C Ojukwu for the
+codon compiler/language
+
+"""
+
+from .nj import *
+from .tree import * 
+from .upgma import * 
+
+
+
+
