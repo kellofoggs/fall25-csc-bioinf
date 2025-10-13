@@ -66,7 +66,7 @@ def get_contig_lengths(data_dir_path):
         return list(map(len, contigs))
     
 def python_run():
-    result = subprocess.run(f'cd test  && ulimit -s 8192000 && python test_phylo.py', cwd= base_dir_path, check=True,shell=True, text=True)  
+    result = subprocess.run(f'cd test  && ulimit -s 8192000 && python test_phylo.py', capture_output=True, cwd= base_dir_path, check=True,shell=True, text=True)  
     return(str(result.stdout))
     # n_50 = calculate_N50(get_contig_lengths())
     # return n_50
