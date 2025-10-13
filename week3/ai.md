@@ -1,0 +1,1 @@
+AI free this week
