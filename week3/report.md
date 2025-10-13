@@ -29,3 +29,9 @@ In the original implementation there are portions of the codebase that are not c
 Results:
 Running the following tests for the phylo package using both python and codon yield the following results:
 
+Language      Runtime
+---------------------
+python     213.833ms
+codon      180.768ms
+
+This is a small speedup which may be due to the small size/complexity of the dataset. 
