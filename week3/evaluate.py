@@ -66,16 +66,16 @@ def get_contig_lengths(data_dir_path):
         return list(map(len, contigs))
     
 def python_run():
-    result = subprocess.run(f'cd test  && ulimit -s 8192000 && python test_phylo.python ',stdout=subprocess.DEVNULL, cwd= base_dir_path, check=True,shell=True)  
+    result = subprocess.run(f'cd test  && ulimit -s 8192000 && python test_phylo.py', cwd= base_dir_path, check=True,shell=True, text=True)  
     return(str(result.stdout))
     # n_50 = calculate_N50(get_contig_lengths())
     # return n_50
 
 def codon_run():
     # print(base_dir_path)
-    result = subprocess.run(f'cd test && codon build -release test_phylo.codon -o test_phylo',stdout=subprocess.DEVNULL,cwd= base_dir_path, shell=True, check=True)
+    subprocess.run(f'cd test && codon build -release test_phylo.codon -o test_phylo',cwd= base_dir_path, shell=True, check=True)
 
-    result = subprocess.run(f'cd test && ./test_phylo',stdout=subprocess.DEVNULL,cwd= base_dir_path, shell=True, check=True)
+    result = subprocess.run(f'cd test && ./test_phylo',cwd= base_dir_path, shell=True, check=True, capture_output=True, text=True)
     return str(result.stdout)
 
     
@@ -89,7 +89,7 @@ def run_setup(source_code_dir_path):
     codon_compile_cmd = 'codon build -release code/codon_src/main.codon -o main_codon'
 
     # try:
-    result = subprocess.run(f'pwd && {codon_compile_cmd}', stdout=subprocess.DEVNULL, shell=True, check=True, cwd= base_dir_path)
+    result = subprocess.run(f'pwd && {codon_compile_cmd}',  shell=True, check=True, cwd= base_dir_path, capture_output=True)
     # except subprocess.CalledProcessError as e:
     #     print(base_dir_path)
     #     print(codon_compile_cmd)
