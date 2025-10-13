@@ -54,8 +54,8 @@ def main():
     python_test_output = python_run()
     print(f"{'Language':<10} {'Runtime':>10}")
     print("-" * 21)
-    print(f"{'python':<10} {python_test_output:>6}ms")
-    print(f"{'codon':<10} {codon_test_output:>6}ms")
+    print(f"{'python':<10} {python_test_output.strip():>6}ms")
+    print(f"{'codon':<10} {codon_test_output.strip():>6}ms")
 
 
 
