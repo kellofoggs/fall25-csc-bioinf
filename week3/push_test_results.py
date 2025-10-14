@@ -1,7 +1,7 @@
-with open("test/python_tests_out") as py_results_file:
+with open("week3/test/python_tests_out") as py_results_file:
     python_test_results = [line.strip().split() for line in py_results_file]
 
-with open("test/codon_tests_out") as codon_results_file:
+with open("week3/test/codon_tests_out") as codon_results_file:
     codon_test_results = [line.strip().split() for line in codon_results_file]
 
 print(f"{'Language':<10} {'Test Name':<25} {'Test Result':<10}")
