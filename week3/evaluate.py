@@ -60,6 +60,11 @@ def main():
 
 
 
+    
+
+
+
+
 def get_contig_lengths(data_dir_path):
     with open(os.path.join(base_dir_path,f'{data_dir_path}/contig.fasta')) as contig_file:
         contigs = read_fasta(contig_file.readlines())

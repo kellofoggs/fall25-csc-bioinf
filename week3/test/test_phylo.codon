@@ -106,7 +106,7 @@ def test_neighbor_joining():
         test_tree = phylo.neighbor_joining(dist)
 
         assert test_tree == ref_tree
-        return "test_neighbor_joining_passed"
+        return "test_neighbor_joining passed"
     except AssertionError as e:
         return "test_neighbor_joining failed"
 
@@ -120,3 +120,10 @@ results.append(test_upgma(tree, upgma_newick))
 results.append(test_neighbor_joining())
 end = dt.now()
 print((end-start).total_seconds()*1000)
+
+with open("codon_tests_out", 'w') as file:
+    for i in range(0, len(results)):
+        result = results[i]
+        file.write(result)
+        if i +1 < len(results):
+            file.write("\n")

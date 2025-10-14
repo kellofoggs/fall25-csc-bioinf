@@ -1,1 +1,1 @@
-AI free this week
+AI free this week.
