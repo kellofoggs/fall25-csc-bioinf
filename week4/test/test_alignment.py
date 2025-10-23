@@ -300,7 +300,6 @@ def test_global_alignment():
     start = dt.now()
     alignment_two = GlobalAlignment(human_fasta, orang_fasta)
     end = dt.now()
-    print((end-start).total_seconds()*1000)
     run_time = str(round((end-start).total_seconds()*1000, 2))
     print(f"global-mt_human|python|{run_time}|")
 
