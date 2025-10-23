@@ -54,19 +54,19 @@ def test_global_alignment():
         run_time = str(round((end-start).total_seconds()*1000, 2))
         print(f"global-q{i}|python|{run_time}|")    
     
-    # human_fasta = ""
-    # orang_fasta = ""
-    # with open("data/MT-human.fa") as human_fasta_file:
-    #     human_fasta = get_fasta_as_list(human_fasta_file.read().upper())[0]
-    # with open("data/MT-orang.fa") as tang_fasta_file:
-    #     orang_fasta = get_fasta_as_list(tang_fasta_file.read().upper())[0]
+    human_fasta = ""
+    orang_fasta = ""
+    with open("data/MT-human.fa") as human_fasta_file:
+        human_fasta = get_fasta_as_list(human_fasta_file.read().upper())[0]
+    with open("data/MT-orang.fa") as tang_fasta_file:
+        orang_fasta = get_fasta_as_list(tang_fasta_file.read().upper())[0]
     
-    # start = dt.now()
-    # alignment_two = GlobalAlignment(human_fasta, orang_fasta)
-    # end = dt.now()
-    # print((end-start).total_seconds()*1000)
-    # run_time = str(round((end-start).total_seconds()*1000, 2))
-    # print(f"global-mt_human|codon|{run_time}|")
+    start = dt.now()
+    alignment_two = GlobalAlignment(human_fasta, orang_fasta)
+    end = dt.now()
+    print((end-start).total_seconds()*1000)
+    run_time = str(round((end-start).total_seconds()*1000, 2))
+    print(f"global-mt_human|python|{run_time}|")
 
 
     # for i in range(len(my_list)):
