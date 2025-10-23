@@ -2,7 +2,7 @@ import re
 from datetime import datetime as dt
 start = dt.now()
 
-from ..code.python.alignment import GlobalAlignment, LocalAlignment
+from .alignment import GlobalAlignment, LocalAlignment
 # simian_file_names = ["MT-human.fa", "MT-orang.fa"]
 # other_file_names = ['q1.fa', 'q2.fa', 't1.fa', 't2.fa']
 def gen_unique_pairs(my_list):
