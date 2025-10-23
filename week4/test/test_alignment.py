@@ -85,18 +85,18 @@ def test_local_alignment():
         alignment = LocalAlignment(q_fasta, t_fasta)
         end = dt.now()
         run_time = str(round((end-start).total_seconds()*1000, 2))
-        print(f"local-q{i}|codon|{run_time}|")    
+        print(f"local-q{i}|python|{run_time}|")    
     human_fasta = ""
     orang_fasta = ""
     with open("data/MT-human.fa") as human_fasta_file:
         human_fasta = get_fasta_as_list(human_fasta_file.read().upper())[0]
     with open("data/MT-orang.fa") as tang_fasta_file:
         orang_fasta = get_fasta_as_list(tang_fasta_file.read().upper())[0]
-    # start = dt.now()
-    # alignment_two = LocalAlignment(human_fasta, orang_fasta)
-    # end = dt.now()
-    # run_time = str((end-start).total_seconds()*1000)
-    # print(f"local-mt_human|codon|{run_time}|")#(end-start).total_seconds()*1000)
+    start = dt.now()
+    alignment_two = LocalAlignment(human_fasta, orang_fasta)
+    end = dt.now()
+    run_time = str((end-start).total_seconds()*1000)
+    print(f"local-mt_human|python|{run_time}|")#(end-start).total_seconds()*1000)
 
 
     # for i in range(len(my_list)):
