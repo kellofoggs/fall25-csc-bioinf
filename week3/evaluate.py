@@ -1,4 +1,4 @@
-# from utilities.file_tools import Fasta
+# from codon_utilities.file_tools import Fasta
 import os
 import subprocess
 import zipfile

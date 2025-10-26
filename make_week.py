@@ -19,7 +19,7 @@ import os
 abs_file_path = os.path.abspath(__file__)
 root_dir_path = os.path.dirname(abs_file_path)
 subdir_names = ['code', 'data', 'test']
-file_names = ['ai.md']
+file_names = ['ai.md', 'report.md']
 
 
 
