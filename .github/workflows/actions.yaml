@@ -42,7 +42,7 @@ jobs:
           jupyter nbconvert --to html --execute week5.ipynb --output summary.html
  
       - name: Upload notebook summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@latest
         with:
           name: notebook-summary
           path: week5/summary.html
