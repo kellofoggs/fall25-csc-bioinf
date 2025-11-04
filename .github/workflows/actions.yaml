@@ -37,5 +37,18 @@ jobs:
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: Week 
-        run: cd week5 && jupyter nbconvert --to notebook --execute week5.ipynb --inplace
+        run: |
+          cd week5
+          jupyter nbconvert --to html --execute week5.ipynb --output summary.html
  
+      - name: Upload notebook summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: notebook-summary
+          path: week5/summary.html
+          
+      - name: Add notebook HTML to job summary
+        run: |
+          echo "<h2>Week 5 Notebook Summary</h2>" >> $GITHUB_STEP_SUMMARY
+          echo "<iframe src='week5/summary.html' width='100%' height='800'></iframe>" >> $GITHUB_STEP_SUMMARY
+
