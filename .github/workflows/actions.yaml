@@ -17,8 +17,8 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          python-version: 3.11  # or your desired Python version
-          activate-environment: myenv
+          python-version: 3.9  # or your desired Python version
+          activate-environment: codon_bio
           environment-file: environments/environment.yaml
 
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
