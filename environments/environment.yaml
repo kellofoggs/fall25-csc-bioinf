@@ -16,8 +16,10 @@ dependencies:
   - scanpy
   - pooch
   - anndata
+  - jupyter
+  - nbconvert
+  - ipykernel
   - pip
-
 # variables:
 #   PYTHONPATH: /home/kojukwu/fall25-csc-bioinf/ 
 #   CODON_PATH: /home/kojukwu/fall25-csc-bioinf/

@@ -18,19 +18,15 @@ jobs:
         with:
           auto-update-conda: true
           activate-environment: codon_bio
-          environment-file: environments/environment.yaml
+          environment-file: environments/my_environment.yaml
 
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: Week 
+      - name: Week
         run: |
           cd week6
-          sudo apt install fastqc
-          conda init
-          conda activate codon_bio
-          conda install jupyter
-          conda install ncbonvert
-          jupyter nbconvert --to html --execute week6.ipynb --output summary.html
+          sudo apt-get update && sudo apt-get install -y fastqc
+          conda run -n codon_bio jupyter nbconvert --to html --execute week6.ipynb --output summary.html
  
       - name: Upload notebook summary
         uses: actions/upload-artifact@v4
