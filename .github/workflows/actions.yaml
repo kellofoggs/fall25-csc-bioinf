@@ -39,5 +39,5 @@ jobs:
       - name: Add notebook HTML to job summary
         run: |
           echo "<h2>Week 6 Notebook Summary</h2>" >> $GITHUB_STEP_SUMMARY
-          echo "<iframe src='week5/summary.html' width='100%' height='800'></iframe>" >> $GITHUB_STEP_SUMMARY
+          echo "<iframe src='week6/summary.html' width='100%' height='800'></iframe>" >> $GITHUB_STEP_SUMMARY
 
