@@ -1,15 +1,39 @@
 name: codon_bio
 channels:
+  - bioconda
+  - conda-forge
   - defaults
+
 dependencies:
-  - python=3.10
+  - python=3.9
+  - matplotlib
+  - celltypist
   - biopython
-  - numpy
+  - celltypist
+  - alevin-fry
+  - salmon
+  - pyroe
+  - scanpy
+  - pooch
+  - anndata
   - pip
 
-variables:
-  PYTHONPATH: <PATH_TO_ROSALIND_DIR> 
-  CODON_PATH: <PATH_TO_ROSALIND_DIR>
-  # CODON_PYTHON: <PATH_TO/miniconda3/envs/codon_bio/lib/libpython3.13.so>
+# variables:
+#   PYTHONPATH: /home/kojukwu/fall25-csc-bioinf/ 
+#   CODON_PATH: /home/kojukwu/fall25-csc-bioinf/
+#   # CODON_PYTHON: <PATH_TO/miniconda3/envs/codon_bio/lib/libpython3.13.so>
+#   # CODON_PYTHON: /home/kojukwu/miniconda3/envs/codon_bio/lib/libpython3.13.so.1.0
+#   CODON_PYTHON: /home/kojukwu/miniconda3/envs/codon_bio/lib/libpython3.10.so.1.0
 
-# CODON_PYTHON=/usr/lib/x86_64-linux-gnu/libpython3.8.so.1.0
+# name: codon_bio
+# channels:
+#   - defaults
+# dependencies:
+#   - python=3.13
+#   - biopython
+#   - pip
+# variables:
+#   PYTHONPATH: /home/kojukwu/fall25-csc-bioinf/ 
+#   CODON_PATH: /home/kojukwu/fall25-csc-bioinf/
+#   # CODON_PYTHON: <PATH_TO/miniconda3/envs/codon_bio/lib/libpython3.13.so>
+#   CODON_PYTHON: /home/kojukwu/miniconda3/envs/codon_bio/lib/libpython3.13.so.1.0
