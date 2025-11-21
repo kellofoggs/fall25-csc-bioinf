@@ -26,6 +26,7 @@ jobs:
         run: |
           cd week6
           sudo apt install fastqc
+          conda init
           conda activate codon_bio
           jupyter nbconvert --to html --execute week6.ipynb --output summary.html
  
