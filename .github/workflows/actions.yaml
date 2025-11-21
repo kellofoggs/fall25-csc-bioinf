@@ -7,32 +7,12 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Install Codon
-        run: |
-          mkdir -p ${HOME}/.codon
-          curl -L https://github.com/exaloop/codon/releases/download/v0.19.3/codon-linux-x86_64.tar.gz | tar zxvf - --strip-components=1 -C ${HOME}/.codon
-          curl -L https://github.com/exaloop/seq/releases/download/v0.11.5/seq-linux-x86_64.tar.gz | tar zxvf - -C ${HOME}/.codon/lib/codon/plugins
-          export PATH=${PATH}:${HOME}/.codon/bin
-          echo "PATH=${PATH}" >> $GITHUB_ENV
       - name: Check out repository code
         uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
           python-version: '3.10'
-      - name: Set up Codon Python bridge
-        run: |
-          pip install find_libpython
-          export CODON_PYTHON=$(find_libpython)
-          echo "Found Python at: ${CODON_PYTHON}"
-          echo "CODON_PYTHON=${CODON_PYTHON}" >> $GITHUB_ENV
-          echo "CODON_PATH=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
-          echo "PYTHON_PATH=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
-          pip install matplotlib  # Dependencies for week1
-          pip install numpy
-          # pip install biopython
-          pip install networkx
-          pip install biotite
-          pip install jupyter nbconvert notebook
+
       - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -57,6 +37,6 @@ jobs:
           
       - name: Add notebook HTML to job summary
         run: |
-          echo "<h2>Week 5 Notebook Summary</h2>" >> $GITHUB_STEP_SUMMARY
+          echo "<h2>Week 6 Notebook Summary</h2>" >> $GITHUB_STEP_SUMMARY
           echo "<iframe src='week5/summary.html' width='100%' height='800'></iframe>" >> $GITHUB_STEP_SUMMARY
 
