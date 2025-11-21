@@ -28,6 +28,8 @@ jobs:
           sudo apt install fastqc
           conda init
           conda activate codon_bio
+          conda install jupyter
+          conda install ncbonvert
           jupyter nbconvert --to html --execute week6.ipynb --output summary.html
  
       - name: Upload notebook summary
