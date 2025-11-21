@@ -18,7 +18,13 @@ jobs:
         with:
           auto-update-conda: true
           activate-environment: codon_bio
-          environment-file: environments/my_environment.yaml
+          environment-file: environments/environment.yaml
+
+      - name: Ensure conda environment packages
+        run: |
+          echo "Updating conda environment from environments/environment.yaml"
+          conda env update -n codon_bio -f environments/environment.yaml --prune || \
+            (echo "conda env update failed, trying mamba if available" && conda run -n base mamba env update -n codon_bio -f environments/environment.yaml --prune) || true
 
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
